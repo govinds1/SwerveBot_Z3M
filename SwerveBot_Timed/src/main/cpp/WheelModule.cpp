@@ -78,3 +78,7 @@ units::velocity::feet_per_second_t WheelModule::GetSpeed() {
 units::length::foot_t WheelModule::GetDistance() {
     return units::length::foot_t(m_driveEncoder->GetPosition());
 }
+
+const frc::SwerveModuleState& WheelModule::GetState() {
+    return m_state;
+}

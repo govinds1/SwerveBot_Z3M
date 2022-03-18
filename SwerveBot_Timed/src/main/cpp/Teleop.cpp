@@ -16,8 +16,5 @@ void Teleop::Periodic() {
         m_drive->SetFieldRelative(false);
     }
 
-
-
-
     m_drive->Periodic();
 }

@@ -5,7 +5,13 @@ SwerveDrive::SwerveDrive() {
     ResetSpeeds();
 }
 
-void SwerveDrive::Init() {
+void SwerveDrive::Init(bool autonomous, frc::Pose2d initialPose) {
+    // Use hand set Pose from selected auton to Set odometry here
+    // If run in teleop init, or there is no selected auton, Pose should just be origin
+    if (autonomous) {
+        SetPose(initialPose);
+    }
+
     fieldRelative = false;
     ResetSpeeds();
     m_leftFront.Init();
@@ -19,18 +25,26 @@ void SwerveDrive::Periodic() {
     m_leftRear.Periodic();
     m_rightFront.Periodic();
     m_rightRear.Periodic();
+
+    m_odometry.Update(
+        GetAngle(), 
+        m_leftFront.GetState(),
+        m_leftRear.GetState(),
+        m_rightFront.GetState(),
+        m_rightRear.GetState()
+    );
 }
 
 // Takes direct input from controller axes, handle conversions to real units and proper robot coordinates in this function
 // Robot coords: 
 //      forward = +x
 //      right = -y
-//      turn = +omega (CCW is positive)
+//      turn = -omega (CCW (turning left) is positive)
 void SwerveDrive::Drive(double forward, double right, double turn) {
     SetSpeeds(
         forward * SPEEDS::MAX_FORWARD_SPEED,
         -right * SPEEDS::MAX_STRAFE_SPEED,
-        units::angular_velocity::radians_per_second_t(turn * SPEEDS::MAX_TURN_SPEED)
+        units::angular_velocity::radians_per_second_t(-turn * SPEEDS::MAX_TURN_SPEED)
     );
 }
 
@@ -54,6 +68,7 @@ void SwerveDrive::SetSpeeds(units::velocity::feet_per_second_t vx, units::veloci
         m_desiredSpeeds.vy = vy;
         m_desiredSpeeds.omega = omega;
     }
+    SetWheelStates();
 }
 
 void SwerveDrive::SetWheelStates() {
@@ -68,10 +83,35 @@ void SwerveDrive::SetFieldRelative(bool fieldRel) {
     fieldRelative = fieldRel;
 }
 
+void SwerveDrive::SetPose(frc::Pose2d newPose) {
+    m_odometry.ResetPosition(newPose, GetAngle());
+}
+
+void SwerveDrive::SetPose(double x, double y) {
+    SetPose(units::meter_t(x), units::meter_t(y));
+}
+
+void SwerveDrive::SetPose(units::meter_t x, units::meter_t y) {
+    frc::Pose2d newPose = frc::Pose2d(x, y, GetAngle());
+    SetPose(newPose);
+}
+
+void SwerveDrive::ResetGyro() {
+    // Reset Gyro to a heading of 0 and SetPose so the new angle is updated in odometry
+
+    // gyro.Reset();
+    SetPose(GetPose());
+}
+
 frc::Rotation2d SwerveDrive::GetAngle() {
     // Return Gyro reading
     // return frc::Rotation2d(gyro.Get());
+    // negate if necessary, turning left (CCW) should be positive
 
-    return frc::Rotation2d(units::angle::radian_t(0));
+    return -frc::Rotation2d(units::angle::radian_t(0));
 
+}
+
+frc::Pose2d SwerveDrive::GetPose() {
+    return m_odometry.GetPose();
 }

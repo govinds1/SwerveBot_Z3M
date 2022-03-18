@@ -37,4 +37,5 @@ class WheelModule {
     units::angle::radian_t GetAngle();
     units::velocity::feet_per_second_t GetSpeed();
     units::length::foot_t GetDistance();
+    const frc::SwerveModuleState& GetState();
 };
