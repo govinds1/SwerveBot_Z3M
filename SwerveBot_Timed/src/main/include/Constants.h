@@ -43,3 +43,19 @@ namespace SPEEDS {
     const units::velocity::feet_per_second_t MAX_STRAFE_SPEED = 1.0_fps;
     const double MAX_TURN_SPEED = 1.0; // Doesn't work as units::radians_per_second_t for some reason
 }
+
+
+// For correcting/setting odometry to certain known locations when possible
+// Examples: Auton starts, scoring locations, corners of the field, other landmarks, etc
+// as a side note, it is possible to do a more dynamic calibration with vision, so adding in vision target locations is helpful as well
+namespace POSES {
+    struct field_pose {
+        double x; // across length of field, postive towards forward (to opponent's alliance station)
+        double y; // across width of field, positive towards left
+        double rotation; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW)
+    };
+    // (0, 0, 0) means robot is in the center of the field, facing the opponent's alliance station
+    // ^^^^^^^^^ or we change the world coordinates to whatever we want ^^^^^^^^^
+
+    const field_pose AUTON_LEFT_START {3.0, 10.0, -30};
+}

@@ -1,6 +1,8 @@
 #include "SwerveDrive.h"
 
 SwerveDrive::SwerveDrive() {
+    
+
     fieldRelative = false;
     ResetSpeeds();
 }
@@ -8,6 +10,7 @@ SwerveDrive::SwerveDrive() {
 void SwerveDrive::Init(bool autonomous, frc::Pose2d initialPose) {
     // Use hand set Pose from selected auton to Set odometry here
     // If run in teleop init, or there is no selected auton, Pose should just be origin
+    // do not reset pose in both teleop and auton, unless you know the exact poses
     if (autonomous) {
         SetPose(initialPose);
     }
@@ -72,7 +75,9 @@ void SwerveDrive::SetSpeeds(units::velocity::feet_per_second_t vx, units::veloci
 }
 
 void SwerveDrive::SetWheelStates() {
-    auto [lf, lr, rf, rr] = m_kinematics.ToSwerveModuleStates(m_desiredSpeeds);
+    auto stateArray = m_kinematics.ToSwerveModuleStates(m_desiredSpeeds);
+    m_kinematics.DesaturateWheelSpeeds(&stateArray, SPEEDS::MAX_FORWARD_SPEED + SPEEDS::MAX_STRAFE_SPEED);
+    auto [lf, lr, rf, rr] = stateArray;
     m_leftFront.SetState(lf);
     m_leftRear.SetState(lr);
     m_rightFront.SetState(rf);
