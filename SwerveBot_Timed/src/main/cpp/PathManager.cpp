@@ -5,6 +5,8 @@ PathManager::PathManager() {
     AddTrajectory("Left Start to Ball 1", GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_1));
     AddTrajectory("Ball 1 to Ball 2", GenTrajectory(POSES::BALL_1, POSES::BALL_2));
     AddTrajectory("Left Start to Ball 2", trajectories["Left Start to Ball 1"] + trajectories["Ball 1 to Ball 2"]);
+
+    swerveDriveController.SetTolerance(TRAJECTORIES::trajectoryTolerance);
 }
 
 void PathManager::AddTrajectory(std::string name, frc::Trajectory trajectory) {
@@ -24,4 +26,8 @@ frc::Trajectory PathManager::GenTrajectory(const POSES::field_pose &start, const
 frc::ChassisSpeeds PathManager::CalculateSpeeds(units::time::second_t currentTime, std::string trajectoryName, frc::Pose2d currentPose, frc::Rotation2d currentHeading) {
     auto desiredState = trajectories[trajectoryName].Sample(currentTime);
     return swerveDriveController.Calculate(currentPose, desiredState, currentHeading);
+}
+
+bool PathManager::IsTrajectoryFinished(units::time::second_t currentTime, std::string trajectoryName) {
+    return trajectories[trajectoryName].TotalTime() > currentTime;
 }

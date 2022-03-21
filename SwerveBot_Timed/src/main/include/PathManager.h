@@ -35,6 +35,8 @@ class PathManager {
     frc::HolonomicDriveController swerveDriveController{xController, yController, thetaController};
 
     frc::ChassisSpeeds CalculateSpeeds(units::time::second_t currentTime, std::string trajectoryName, frc::Pose2d currentPose, frc::Rotation2d currentHeading);
+
+    bool IsTrajectoryFinished(units::time::second_t currentTime, std::string trajectoryName);
     
 
 };

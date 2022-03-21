@@ -146,5 +146,5 @@ namespace TRAJECTORIES {
     // const string_trajectory_pair LEFTSTART_TO_BALL1 = string_trajectory_pair("Left Start to Ball 1", Utils::GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_1));
     // const string_trajectory_pair BALL1_TO_BALL2 = string_trajectory_pair("Ball 1 to Ball 2", Utils::GenTrajectory(POSES::BALL_1, POSES::BALL_2));
     // const string_trajectory_pair LEFTSTART_TO_BALL2 = string_trajectory_pair("Left Start to Ball 2", LEFTSTART_TO_BALL1.TRAJECTORY + BALL1_TO_BALL2.TRAJECTORY);
-    
+    const frc::Pose2d trajectoryTolerance{units::foot_t(0.05), units::foot_t(0.05), frc::Rotation2d(units::radian_t(0.05))};
 }
