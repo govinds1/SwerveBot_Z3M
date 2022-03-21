@@ -1,5 +1,13 @@
 #pragma once
 
+#include <vector>
+
+#include <frc/geometry/Translation2d.h>
+#include <frc/geometry/Pose2d.h>
+#include <frc/geometry/Translation2d.h>
+#include <frc/trajectory/TrajectoryConfig.h>
+#include <frc/trajectory/Trajectory.h>
+#include <frc/trajectory/TrajectoryGenerator.h>
 
 namespace MOTOR_CAN_ID {
     struct wheel_module {
@@ -29,33 +37,102 @@ namespace ENCODER_CONVERSIONS {
 }
 
 namespace PID_VALUES { // Might have to make separate values for each wheel?
-    const double DRIVE_P = 0.0;
-    const double DRIVE_I = 0.0;
-    const double DRIVE_D = 0.0;
+    struct pid_config {
+        double P;
+        double I;
+        double D;
+        pid_config(int p, int i, int d) {
+            P = p;
+            I = i;
+            D = d;
+        }
+    };
+    // Wheels
+    const pid_config DRIVE{0, 0, 0};
+    const pid_config ANGLE{0, 0, 0};
 
-    const double ANGLE_P = 0.0;
-    const double ANGLE_I = 0.0;
-    const double ANGLE_D = 0.0;
+    // Chassis (for path following)
+    const pid_config CHASSIS_X{0, 0, 0};
+    const pid_config CHASSIS_Y{0, 0, 0};
+    const pid_config CHASSIS_ROT{0, 0, 0};
 }
 
 namespace SPEEDS {
     const units::velocity::feet_per_second_t MAX_FORWARD_SPEED = 1.0_fps;
     const units::velocity::feet_per_second_t MAX_STRAFE_SPEED = 1.0_fps;
     const double MAX_TURN_SPEED = 1.0; // Doesn't work as units::radians_per_second_t for some reason
+
+    const units::velocity::feet_per_second_t MAX_CHASSIS_SPEED = MAX_FORWARD_SPEED + MAX_STRAFE_SPEED;
+    const units::acceleration::feet_per_second_squared_t MAX_CHASSIS_ACCEL = units::acceleration::feet_per_second_squared_t(1);
 }
 
 
 // For correcting/setting odometry to certain known locations when possible
-// Examples: Auton starts, scoring locations, corners of the field, other landmarks, etc
+// Examples: Auton starts, scoring locations, corners of the field other landmarks, etc
 // as a side note, it is possible to do a more dynamic calibration with vision, so adding in vision target locations is helpful as well
+// Also used for spline trajectories, as start/end locations or waypoints
 namespace POSES {
     struct field_pose {
-        double x; // across length of field, postive towards forward (to opponent's alliance station)
-        double y; // across width of field, positive towards left
-        double rotation; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW)
+        double X; // across length of field, postive towards forward (to opponent's alliance station)
+        double Y; // across width of field, positive towards left
+        double ROT; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW)
+
+        frc::Translation2d toTranslation() const {
+            return frc::Translation2d(units::foot_t(X), units::foot_t(Y));
+        }
+        frc::Pose2d toPose() const {
+            return frc::Pose2d(this->toTranslation(), frc::Rotation2d(units::angle::radian_t(ROT)));
+        }
+        field_pose(int x, int y, int rot) {
+            X = x;
+            Y = y;
+            ROT = rot;
+        }
     };
     // (0, 0, 0) means robot is in the center of the field, facing the opponent's alliance station
     // ^^^^^^^^^ or we change the world coordinates to whatever we want ^^^^^^^^^
 
-    const field_pose AUTON_LEFT_START {3.0, 10.0, -30};
+    const field_pose AUTON_LEFT_START {3.0, 10.0, -30*M_PI/180};
+    const field_pose BALL_1{0, 0, 0};
+    const field_pose BALL_2{0, 0, 0};
+}
+
+// Information needed for TrajectoryGenerator
+namespace TRAJECTORIES {
+    // struct trajectory {
+    //     frc::Pose2d START;
+    //     std::vector<frc::Translation2d> WAYPOINTS;
+    //     frc::Pose2d END;
+    //     units::feet_per_second_t MAX_VELOCITY;
+    //     units::feet_per_second_squared_t MAX_ACCEL;
+
+    //     trajectory(frc::Pose2d start, std::vector<frc::Translation2d> waypoints, frc::Pose2d end, units::feet_per_second_t max_vel, units::feet_per_second_squared_t max_accel) {
+    //         START = start;
+    //         WAYPOINTS = waypoints;
+    //         END = end;
+    //         MAX_VELOCITY = max_vel;
+    //         MAX_ACCEL = max_accel;
+    //     }
+    //     trajectory(frc::Pose2d start, std::vector<frc::Translation2d> waypoints, frc::Pose2d end) {
+    //         START = start;
+    //         WAYPOINTS = waypoints;
+    //         END = end;
+    //         MAX_VELOCITY = std::min(SPEEDS::MAX_FORWARD_SPEED, SPEEDS::MAX_STRAFE_SPEED);
+    //         MAX_ACCEL = SPEEDS::MAX_CHASSIS_ACCEL;
+    //     }
+    // };
+    // const trajectory LEFTSTART_TO_BALL1{POSES::AUTON_LEFT_START.toPose(), {}, POSES::BALL_1.toPose()};
+    // const trajectory BALL1_TO_BALL2{POSES::BALL_1.toPose(), {}, POSES::BALL_2.toPose()};
+    frc::Trajectory GenerateTrajectory(POSES::field_pose start, POSES::field_pose end, std::vector<POSES::field_pose> waypoints = {}, 
+                    units::feet_per_second_t max_vel = SPEEDS::MAX_CHASSIS_SPEED, units::feet_per_second_squared_t max_accel = SPEEDS::MAX_CHASSIS_ACCEL) {
+        std::vector<frc::Translation2d> wpts;
+        for (auto wpt : waypoints) {
+            wpts.push_back(wpt.toTranslation());
+        }
+        return frc::TrajectoryGenerator::GenerateTrajectory(start.toPose(), wpts, end.toPose(), frc::TrajectoryConfig(max_vel, max_accel));
+    }
+
+    const frc::Trajectory LEFTSTART_TO_BALL1 = GenerateTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_1);
+    const frc::Trajectory BALL1_TO_BALL2 = GenerateTrajectory(POSES::BALL_1, POSES::BALL_2);
+    const frc::Trajectory LEFTSTART_TO_BALL2 = LEFTSTART_TO_BALL1 + BALL1_TO_BALL2;
 }

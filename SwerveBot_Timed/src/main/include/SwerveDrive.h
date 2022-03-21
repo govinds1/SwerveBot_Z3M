@@ -54,7 +54,7 @@ class SwerveDrive {
     frc::ChassisSpeeds m_desiredSpeeds;
 
 
-    frc::SwerveDriveOdometry<4> m_odometry{m_kinematics, GetAngle(), frc::Pose2d(0_m, 0_m, 0_rad)};
+    frc::SwerveDriveOdometry<4> m_odometry{m_kinematics, GetAngle()};
     // Add Gyro
     bool fieldRelative = false;
 
@@ -65,6 +65,7 @@ class SwerveDrive {
     void Init(bool autonomous = false, frc::Pose2d initialPose = frc::Pose2d(0_m, 0_m, 0_rad));
     void Periodic();
     void Drive(double forward, double right, double turn);
+    void Drive(double forward, double right, double turn, bool driveFieldRelative);
 
     void ResetSpeeds();
     void SetSpeeds(double vx, double vy, double omega);

@@ -1,7 +1,7 @@
 #include "SwerveDrive.h"
 
 SwerveDrive::SwerveDrive() {
-    
+
 
     fieldRelative = false;
     ResetSpeeds();
@@ -51,6 +51,13 @@ void SwerveDrive::Drive(double forward, double right, double turn) {
     );
 }
 
+void SwerveDrive::Drive(double forward, double right, double turn, bool driveFieldRelative) {
+    bool fieldRelSaved = fieldRelative;
+    SetFieldRelative(driveFieldRelative);
+    Drive(forward, right, turn);
+    SetFieldRelative(fieldRelSaved);
+}
+
 void SwerveDrive::ResetSpeeds() {
     SetSpeeds(0, 0, 0);
 }
@@ -64,7 +71,7 @@ void SwerveDrive::SetSpeeds(double vx, double vy, double omega) {
 }
 
 void SwerveDrive::SetSpeeds(units::velocity::feet_per_second_t vx, units::velocity::feet_per_second_t vy, units::angular_velocity::radians_per_second_t omega) {
-    if (!fieldRelative) {
+    if (fieldRelative) {
         m_desiredSpeeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx, vy, omega, GetAngle());
     } else {
         m_desiredSpeeds.vx = vx;

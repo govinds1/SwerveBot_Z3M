@@ -79,6 +79,8 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp",
     "*.inc": "cpp",
-    "swervedrivekinematics.h": "c"
+    "swervedrivekinematics.h": "c",
+    "pose2d.h": "c",
+    "trajectorygenerator.h": "c"
   }
 }
