@@ -14,8 +14,8 @@ WheelModule::WheelModule(std::shared_ptr<rev::CANSparkMax> driveMotor, std::shar
     m_driveEncoder->SetVelocityConversionFactor(ENCODER_CONVERSIONS::DRIVE_FEET_PER_SECOND_PER_TICK);
     m_angleEncoder->SetPositionConversionFactor(ENCODER_CONVERSIONS::ANGLE_RAD_PER_TICK);
 
-    SetDrivePID(PID_VALUES::ANGLE_P, PID_VALUES::ANGLE_I, PID_VALUES::ANGLE_D);
-    SetAnglePID(PID_VALUES::DRIVE_P, PID_VALUES::DRIVE_I, PID_VALUES::DRIVE_D);
+    SetDrivePID(PID_VALUES::DRIVE.P, PID_VALUES::DRIVE.I, PID_VALUES::DRIVE.D);
+    SetAnglePID(PID_VALUES::ANGLE.P, PID_VALUES::ANGLE.I, PID_VALUES::ANGLE.D);
 
     ResetState();
 }

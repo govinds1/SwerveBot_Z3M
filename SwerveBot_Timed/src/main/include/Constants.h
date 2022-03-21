@@ -1,13 +1,20 @@
 #pragma once
 
 #include <vector>
+#include <string>
+#include <utility>
 
+
+#include <units/acceleration.h>
+#include <units/velocity.h>
+#include <units/angular_velocity.h>
+#include <units/angular_acceleration.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/geometry/Pose2d.h>
 #include <frc/geometry/Translation2d.h>
-#include <frc/trajectory/TrajectoryConfig.h>
-#include <frc/trajectory/Trajectory.h>
-#include <frc/trajectory/TrajectoryGenerator.h>
+// #include <frc/trajectory/TrajectoryConfig.h>
+// #include <frc/trajectory/Trajectory.h>
+// #include <frc/trajectory/TrajectoryGenerator.h>
 
 namespace MOTOR_CAN_ID {
     struct wheel_module {
@@ -64,6 +71,8 @@ namespace SPEEDS {
 
     const units::velocity::feet_per_second_t MAX_CHASSIS_SPEED = MAX_FORWARD_SPEED + MAX_STRAFE_SPEED;
     const units::acceleration::feet_per_second_squared_t MAX_CHASSIS_ACCEL = units::acceleration::feet_per_second_squared_t(1);
+    const units::angular_velocity::radians_per_second_t MAX_CHASSIS_TURN_SPEED = 6.28_rad_per_s;
+    const auto MAX_CHASSIS_TURN_ACCEL= 3.14_rad_per_s / 1_s;
 }
 
 
@@ -83,7 +92,7 @@ namespace POSES {
         frc::Pose2d toPose() const {
             return frc::Pose2d(this->toTranslation(), frc::Rotation2d(units::angle::radian_t(ROT)));
         }
-        field_pose(int x, int y, int rot) {
+        field_pose(double x, double y, double rot) {
             X = x;
             Y = y;
             ROT = rot;
@@ -92,7 +101,7 @@ namespace POSES {
     // (0, 0, 0) means robot is in the center of the field, facing the opponent's alliance station
     // ^^^^^^^^^ or we change the world coordinates to whatever we want ^^^^^^^^^
 
-    const field_pose AUTON_LEFT_START {3.0, 10.0, -30*M_PI/180};
+    const field_pose AUTON_LEFT_START {3.0, 10.0, -30.0*M_PI/180.0};
     const field_pose BALL_1{0, 0, 0};
     const field_pose BALL_2{0, 0, 0};
 }
@@ -123,16 +132,19 @@ namespace TRAJECTORIES {
     // };
     // const trajectory LEFTSTART_TO_BALL1{POSES::AUTON_LEFT_START.toPose(), {}, POSES::BALL_1.toPose()};
     // const trajectory BALL1_TO_BALL2{POSES::BALL_1.toPose(), {}, POSES::BALL_2.toPose()};
-    frc::Trajectory GenerateTrajectory(POSES::field_pose start, POSES::field_pose end, std::vector<POSES::field_pose> waypoints = {}, 
-                    units::feet_per_second_t max_vel = SPEEDS::MAX_CHASSIS_SPEED, units::feet_per_second_squared_t max_accel = SPEEDS::MAX_CHASSIS_ACCEL) {
-        std::vector<frc::Translation2d> wpts;
-        for (auto wpt : waypoints) {
-            wpts.push_back(wpt.toTranslation());
-        }
-        return frc::TrajectoryGenerator::GenerateTrajectory(start.toPose(), wpts, end.toPose(), frc::TrajectoryConfig(max_vel, max_accel));
-    }
 
-    const frc::Trajectory LEFTSTART_TO_BALL1 = GenerateTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_1);
-    const frc::Trajectory BALL1_TO_BALL2 = GenerateTrajectory(POSES::BALL_1, POSES::BALL_2);
-    const frc::Trajectory LEFTSTART_TO_BALL2 = LEFTSTART_TO_BALL1 + BALL1_TO_BALL2;
+
+    // struct string_trajectory_pair {
+    //     std::string NAME;
+    //     frc::Trajectory TRAJECTORY;
+    //     string_trajectory_pair(std::string name, frc::Trajectory trajectory) {
+    //         NAME = name;
+    //         TRAJECTORY = trajectory;
+    //     }
+    // };
+
+    // const string_trajectory_pair LEFTSTART_TO_BALL1 = string_trajectory_pair("Left Start to Ball 1", Utils::GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_1));
+    // const string_trajectory_pair BALL1_TO_BALL2 = string_trajectory_pair("Ball 1 to Ball 2", Utils::GenTrajectory(POSES::BALL_1, POSES::BALL_2));
+    // const string_trajectory_pair LEFTSTART_TO_BALL2 = string_trajectory_pair("Left Start to Ball 2", LEFTSTART_TO_BALL1.TRAJECTORY + BALL1_TO_BALL2.TRAJECTORY);
+    
 }

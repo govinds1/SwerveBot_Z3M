@@ -17,24 +17,24 @@ void SwerveDrive::Init(bool autonomous, frc::Pose2d initialPose) {
 
     fieldRelative = false;
     ResetSpeeds();
-    m_leftFront.Init();
-    m_leftRear.Init();
-    m_rightFront.Init();
-    m_rightRear.Init();
+    m_leftFront->Init();
+    m_leftRear->Init();
+    m_rightFront->Init();
+    m_rightRear->Init();
 }
 
 void SwerveDrive::Periodic() {
-    m_leftFront.Periodic();
-    m_leftRear.Periodic();
-    m_rightFront.Periodic();
-    m_rightRear.Periodic();
+    m_leftFront->Periodic();
+    m_leftRear->Periodic();
+    m_rightFront->Periodic();
+    m_rightRear->Periodic();
 
     m_odometry.Update(
         GetAngle(), 
-        m_leftFront.GetState(),
-        m_leftRear.GetState(),
-        m_rightFront.GetState(),
-        m_rightRear.GetState()
+        m_leftFront->GetState(),
+        m_leftRear->GetState(),
+        m_rightFront->GetState(),
+        m_rightRear->GetState()
     );
 }
 
@@ -58,6 +58,10 @@ void SwerveDrive::Drive(double forward, double right, double turn, bool driveFie
     SetFieldRelative(fieldRelSaved);
 }
 
+void SwerveDrive::FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName) {
+    SetSpeeds(m_pathManager->CalculateSpeeds(currentTime, trajectoryName, m_odometry.GetPose(), GetAngle()));
+}
+
 void SwerveDrive::ResetSpeeds() {
     SetSpeeds(0, 0, 0);
 }
@@ -72,12 +76,18 @@ void SwerveDrive::SetSpeeds(double vx, double vy, double omega) {
 
 void SwerveDrive::SetSpeeds(units::velocity::feet_per_second_t vx, units::velocity::feet_per_second_t vy, units::angular_velocity::radians_per_second_t omega) {
     if (fieldRelative) {
-        m_desiredSpeeds = frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx, vy, omega, GetAngle());
+        SetSpeeds(frc::ChassisSpeeds::FromFieldRelativeSpeeds(vx, vy, omega, GetAngle()));
     } else {
-        m_desiredSpeeds.vx = vx;
-        m_desiredSpeeds.vy = vy;
-        m_desiredSpeeds.omega = omega;
+        auto newSpeeds = frc::ChassisSpeeds();
+        newSpeeds.vx = vx;
+        newSpeeds.vy = vy;
+        newSpeeds.omega = omega;
+        SetSpeeds(newSpeeds);
     }
+}
+
+void SwerveDrive::SetSpeeds(frc::ChassisSpeeds newSpeeds) {
+    m_desiredSpeeds = newSpeeds;
     SetWheelStates();
 }
 
@@ -85,10 +95,10 @@ void SwerveDrive::SetWheelStates() {
     auto stateArray = m_kinematics.ToSwerveModuleStates(m_desiredSpeeds);
     m_kinematics.DesaturateWheelSpeeds(&stateArray, SPEEDS::MAX_FORWARD_SPEED + SPEEDS::MAX_STRAFE_SPEED);
     auto [lf, lr, rf, rr] = stateArray;
-    m_leftFront.SetState(lf);
-    m_leftRear.SetState(lr);
-    m_rightFront.SetState(rf);
-    m_rightRear.SetState(rr);
+    m_leftFront->SetState(lf);
+    m_leftRear->SetState(lr);
+    m_rightFront->SetState(rf);
+    m_rightRear->SetState(rr);
 }
 
 void SwerveDrive::SetFieldRelative(bool fieldRel) {

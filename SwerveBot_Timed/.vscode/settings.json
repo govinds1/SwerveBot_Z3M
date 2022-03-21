@@ -81,6 +81,9 @@
     "*.inc": "cpp",
     "swervedrivekinematics.h": "c",
     "pose2d.h": "c",
-    "trajectorygenerator.h": "c"
+    "trajectorygenerator.h": "c",
+    "cansparkmax.h": "c",
+    "swervedriveodometry.h": "c",
+    "curvature.h": "c"
   }
 }

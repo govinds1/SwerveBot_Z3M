@@ -15,6 +15,8 @@ class WheelModule {
     std::shared_ptr<rev::SparkMaxPIDController> m_drivePIDController;
     std::shared_ptr<rev::SparkMaxPIDController> m_anglePIDController;
 
+    // define a zeroAngle that corresponds to the encoder value of the wheel facing forwards
+    // zeroAngle should be passed into the wheelmodule constructor from SwerveDrive
 
     frc::SwerveModuleState m_state;
 
