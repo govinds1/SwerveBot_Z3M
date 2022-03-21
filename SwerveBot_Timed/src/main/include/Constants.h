@@ -11,10 +11,6 @@
 #include <units/angular_acceleration.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/geometry/Pose2d.h>
-#include <frc/geometry/Translation2d.h>
-// #include <frc/trajectory/TrajectoryConfig.h>
-// #include <frc/trajectory/Trajectory.h>
-// #include <frc/trajectory/TrajectoryGenerator.h>
 
 namespace MOTOR_CAN_ID {
     struct wheel_module {
@@ -108,43 +104,7 @@ namespace POSES {
 
 // Information needed for TrajectoryGenerator
 namespace TRAJECTORIES {
-    // struct trajectory {
-    //     frc::Pose2d START;
-    //     std::vector<frc::Translation2d> WAYPOINTS;
-    //     frc::Pose2d END;
-    //     units::feet_per_second_t MAX_VELOCITY;
-    //     units::feet_per_second_squared_t MAX_ACCEL;
-
-    //     trajectory(frc::Pose2d start, std::vector<frc::Translation2d> waypoints, frc::Pose2d end, units::feet_per_second_t max_vel, units::feet_per_second_squared_t max_accel) {
-    //         START = start;
-    //         WAYPOINTS = waypoints;
-    //         END = end;
-    //         MAX_VELOCITY = max_vel;
-    //         MAX_ACCEL = max_accel;
-    //     }
-    //     trajectory(frc::Pose2d start, std::vector<frc::Translation2d> waypoints, frc::Pose2d end) {
-    //         START = start;
-    //         WAYPOINTS = waypoints;
-    //         END = end;
-    //         MAX_VELOCITY = std::min(SPEEDS::MAX_FORWARD_SPEED, SPEEDS::MAX_STRAFE_SPEED);
-    //         MAX_ACCEL = SPEEDS::MAX_CHASSIS_ACCEL;
-    //     }
-    // };
-    // const trajectory LEFTSTART_TO_BALL1{POSES::AUTON_LEFT_START.toPose(), {}, POSES::BALL_1.toPose()};
-    // const trajectory BALL1_TO_BALL2{POSES::BALL_1.toPose(), {}, POSES::BALL_2.toPose()};
-
-
-    // struct string_trajectory_pair {
-    //     std::string NAME;
-    //     frc::Trajectory TRAJECTORY;
-    //     string_trajectory_pair(std::string name, frc::Trajectory trajectory) {
-    //         NAME = name;
-    //         TRAJECTORY = trajectory;
-    //     }
-    // };
-
-    // const string_trajectory_pair LEFTSTART_TO_BALL1 = string_trajectory_pair("Left Start to Ball 1", Utils::GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_1));
-    // const string_trajectory_pair BALL1_TO_BALL2 = string_trajectory_pair("Ball 1 to Ball 2", Utils::GenTrajectory(POSES::BALL_1, POSES::BALL_2));
-    // const string_trajectory_pair LEFTSTART_TO_BALL2 = string_trajectory_pair("Left Start to Ball 2", LEFTSTART_TO_BALL1.TRAJECTORY + BALL1_TO_BALL2.TRAJECTORY);
     const frc::Pose2d trajectoryTolerance{units::foot_t(0.05), units::foot_t(0.05), frc::Rotation2d(units::radian_t(0.05))};
+
+    // Add names here?
 }
