@@ -39,6 +39,13 @@ namespace ENCODER_CONVERSIONS {
     const double ANGLE_RAD_PER_TICK = 1.0; // 1 / (gearRatio * 2 * PI)
 }
 
+namespace ENCODER_ZEROS {
+    int LEFT_FRONT = 0;
+    int LEFT_REAR = 0;
+    int RIGHT_FRONT = 0;
+    int RIGHT_REAR = 0;
+}
+
 namespace PID_VALUES { // Might have to make separate values for each wheel?
     struct pid_config {
         double P;

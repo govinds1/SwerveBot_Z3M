@@ -16,28 +16,35 @@ class WheelModule {
     std::shared_ptr<rev::SparkMaxPIDController> m_anglePIDController;
 
     // define a zeroAngle that corresponds to the encoder value of the wheel facing forwards
-    // zeroAngle should be passed into the wheelmodule constructor from SwerveDrive
+    // unnecessary when using the SparkMaxRelativeEncoder from the built-in NEO hall effect sensor
+    int m_angleEncZero = 0;
 
-    frc::SwerveModuleState m_state;
+    frc::SwerveModuleState m_desiredState;
+    frc::SwerveModuleState m_trueState;
 
     public: 
     WheelModule(std::shared_ptr<rev::CANSparkMax> driveMotor, std::shared_ptr<rev::CANSparkMax> angleMotor, 
             std::shared_ptr<rev::SparkMaxRelativeEncoder> driveEncoder, std::shared_ptr<rev::SparkMaxRelativeEncoder> angleEncoder,
-            std::shared_ptr<rev::SparkMaxPIDController> drivePIDController, std::shared_ptr<rev::SparkMaxPIDController> anglePIDController);
+            std::shared_ptr<rev::SparkMaxPIDController> drivePIDController, std::shared_ptr<rev::SparkMaxPIDController> anglePIDController,
+            int angleEncZero);
 
     void Init();
     void Periodic();
 
     void ResetState();
     void ResetAngle();
-    void SetState(frc::SwerveModuleState newState);
-    void SetState(double feetPerSec, double radians);
-    void SetState(double feetPerSec, frc::Rotation2d radians);
+    void CalibrateAngle();
+    void SetDesiredState(frc::SwerveModuleState newState);
+    void SetDesiredState(double feetPerSec, double radians);
+    void SetDesiredState(double feetPerSec, frc::Rotation2d radians);
+    void SetTrueState();
     void SetDrivePID(double p = 0.0, double i = 0.0, double d = 0.0);
     void SetAnglePID(double p = 0.0, double i = 0.0, double d = 0.0);
 
+    int GetRawAngle();
     units::angle::radian_t GetAngle();
     units::velocity::feet_per_second_t GetSpeed();
     units::length::foot_t GetDistance();
-    const frc::SwerveModuleState& GetState();
+    const frc::SwerveModuleState& GetDesiredState();
+    const frc::SwerveModuleState& GetTrueState();
 };

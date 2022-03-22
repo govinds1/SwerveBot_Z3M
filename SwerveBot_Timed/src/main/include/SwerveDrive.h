@@ -38,10 +38,10 @@ class SwerveDrive {
     std::shared_ptr<rev::SparkMaxPIDController> m_rightRearDrivePIDController = std::make_shared<rev::SparkMaxPIDController>(m_rightRearDrive->GetPIDController());
     std::shared_ptr<rev::SparkMaxPIDController> m_rightRearAnglePIDController = std::make_shared<rev::SparkMaxPIDController>(m_rightRearAngle->GetPIDController());
 
-    WheelModule* m_leftFront = new WheelModule(m_leftFrontDrive, m_leftFrontAngle, m_leftFrontDriveEncoder, m_leftFrontAngleEncoder, m_leftFrontDrivePIDController, m_leftFrontAnglePIDController);
-    WheelModule* m_leftRear = new WheelModule(m_leftRearDrive, m_leftRearAngle, m_leftRearDriveEncoder, m_leftRearAngleEncoder, m_leftRearDrivePIDController, m_leftRearAnglePIDController);
-    WheelModule* m_rightFront = new WheelModule(m_rightFrontDrive, m_rightFrontAngle, m_rightFrontDriveEncoder, m_rightFrontAngleEncoder, m_rightFrontDrivePIDController, m_rightFrontAnglePIDController);
-    WheelModule* m_rightRear = new WheelModule(m_rightRearDrive, m_rightRearAngle, m_rightRearDriveEncoder, m_rightRearAngleEncoder, m_rightRearDrivePIDController, m_rightRearAnglePIDController);
+    WheelModule* m_leftFront = new WheelModule(m_leftFrontDrive, m_leftFrontAngle, m_leftFrontDriveEncoder, m_leftFrontAngleEncoder, m_leftFrontDrivePIDController, m_leftFrontAnglePIDController, ENCODER_ZEROS::LEFT_FRONT);
+    WheelModule* m_leftRear = new WheelModule(m_leftRearDrive, m_leftRearAngle, m_leftRearDriveEncoder, m_leftRearAngleEncoder, m_leftRearDrivePIDController, m_leftRearAnglePIDController, ENCODER_ZEROS::LEFT_REAR);
+    WheelModule* m_rightFront = new WheelModule(m_rightFrontDrive, m_rightFrontAngle, m_rightFrontDriveEncoder, m_rightFrontAngleEncoder, m_rightFrontDrivePIDController, m_rightFrontAnglePIDController, ENCODER_ZEROS::RIGHT_FRONT);
+    WheelModule* m_rightRear = new WheelModule(m_rightRearDrive, m_rightRearAngle, m_rightRearDriveEncoder, m_rightRearAngleEncoder, m_rightRearDrivePIDController, m_rightRearAnglePIDController, ENCODER_ZEROS::RIGHT_REAR);
 
     // Translations are x and y distance from center of robot
     // x is positive towards the front of the robot
@@ -53,6 +53,7 @@ class SwerveDrive {
 
     frc::SwerveDriveKinematics<4> m_kinematics{m_leftFrontLocation, m_leftRearLocation, m_rightFrontLocation, m_rightRearLocation};
     frc::ChassisSpeeds m_desiredSpeeds;
+    frc::ChassisSpeeds m_trueSpeeds;
 
     std::shared_ptr<PathManager> m_pathManager = std::make_shared<PathManager>();
 
@@ -71,9 +72,12 @@ class SwerveDrive {
     bool FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName);
 
     void ResetSpeeds();
-    void SetSpeeds(double vx, double vy, double omega);
-    void SetSpeeds(units::velocity::feet_per_second_t vx, units::velocity::feet_per_second_t vy, units::angular_velocity::radians_per_second_t omega);
-    void SetSpeeds(frc::ChassisSpeeds newSpeeds);
+    void CalibrateWheelsManually();
+    void CalibrateWheelsAuto(units::velocity::feet_per_second_t desiredVX);
+    void SetDesiredSpeeds(double vx, double vy, double omega);
+    void SetDesiredSpeeds(units::velocity::feet_per_second_t vx, units::velocity::feet_per_second_t vy, units::angular_velocity::radians_per_second_t omega);
+    void SetDesiredSpeeds(frc::ChassisSpeeds newSpeeds);
+    void SetTrueSpeeds();
     void SetWheelStates();
     void SetFieldRelative(bool fieldRel);
     void SetPose(frc::Pose2d newPose);
@@ -83,5 +87,7 @@ class SwerveDrive {
 
     frc::Rotation2d GetAngle();
     frc::Pose2d GetPose();
+    frc::ChassisSpeeds GetDesiredSpeeds();
+    frc::ChassisSpeeds GetTrueSpeeds();
 
 };
