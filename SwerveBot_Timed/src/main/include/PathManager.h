@@ -22,8 +22,10 @@ class PathManager {
 
     public:
     PathManager();
+    std::string ConcatPoseNames(std::string pose1, std::string pose2);
     void AddTrajectory(std::string name, frc::Trajectory trajectory);
-    frc::Trajectory GenTrajectory(const POSES::field_pose& start, const POSES::field_pose& end, const std::vector<POSES::field_pose>& waypoints = {}, units::feet_per_second_t max_vel = SPEEDS::MAX_CHASSIS_SPEED, units::feet_per_second_squared_t max_accel = SPEEDS::MAX_CHASSIS_ACCEL);
+    void AddTrajectory(std::string startPoseName, std::string endPoseName, frc::Trajectory trajectory);
+    void GenTrajectory(const POSES::field_pose& start, const POSES::field_pose& end, const std::vector<POSES::field_pose>& waypoints = {}, units::feet_per_second_t max_vel = SPEEDS::MAX_CHASSIS_SPEED, units::feet_per_second_squared_t max_accel = SPEEDS::MAX_CHASSIS_ACCEL);
 
 
     frc2::PIDController xController{PID_VALUES::CHASSIS_X.P, PID_VALUES::CHASSIS_X.I, PID_VALUES::CHASSIS_X.D}; // adds control for forward-backward error
@@ -35,6 +37,7 @@ class PathManager {
     frc::HolonomicDriveController swerveDriveController{xController, yController, thetaController};
 
     frc::ChassisSpeeds CalculateSpeeds(units::time::second_t currentTime, std::string trajectoryName, frc::Pose2d currentPose, frc::Rotation2d currentHeading);
+    frc::ChassisSpeeds CalculateSpeeds(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName, frc::Pose2d currentPose, frc::Rotation2d currentHeading);
 
     bool IsTrajectoryFinished(units::time::second_t currentTime, std::string trajectoryName);
     

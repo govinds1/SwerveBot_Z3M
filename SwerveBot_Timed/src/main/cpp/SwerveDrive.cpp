@@ -1,8 +1,8 @@
 #include "SwerveDrive.h"
 
-SwerveDrive::SwerveDrive() {
+SwerveDrive::SwerveDrive(std::shared_ptr<PathManager> pathManager) {
 
-
+    m_pathManager = pathManager;
     fieldRelative = false;
     ResetSpeeds();
 }
@@ -61,6 +61,11 @@ void SwerveDrive::Drive(double forward, double right, double turn, bool driveFie
 bool SwerveDrive::FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName) {
     SetDesiredSpeeds(m_pathManager->CalculateSpeeds(currentTime, trajectoryName, m_odometry.GetPose(), GetAngle()));
     return m_pathManager->IsTrajectoryFinished(currentTime, trajectoryName);
+}
+
+bool SwerveDrive::FollowTrajectory(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName) {
+    SetDesiredSpeeds(m_pathManager->CalculateSpeeds(currentTime, startPoseName, endPoseName, m_odometry.GetPose(), GetAngle()));
+    return m_pathManager->IsTrajectoryFinished(currentTime, m_pathManager->ConcatPoseNames(startPoseName, endPoseName));
 }
 
 void SwerveDrive::ResetSpeeds() {

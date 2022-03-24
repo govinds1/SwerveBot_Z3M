@@ -1,7 +1,8 @@
 #include "Teleop.h"
 
-Teleop::Teleop(SwerveDrive* drive) {
+Teleop::Teleop(std::shared_ptr<SwerveDrive> drive, std::shared_ptr<PathManager> pathManager) {
     m_drive = drive;
+    m_pathManager = pathManager;
 }
 
 void Teleop::Init() {

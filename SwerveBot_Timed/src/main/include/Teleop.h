@@ -5,10 +5,11 @@
 
 class Teleop {
     frc::XboxController m_driverController{0};
-    SwerveDrive* m_drive;
+    std::shared_ptr<SwerveDrive> m_drive;
+    std::shared_ptr<PathManager> m_pathManager;
 
     public:
-    Teleop(SwerveDrive* drive);
+    Teleop(std::shared_ptr<SwerveDrive> drive, std::shared_ptr<PathManager> pathManager);
     void Init();
     void Periodic();
 };

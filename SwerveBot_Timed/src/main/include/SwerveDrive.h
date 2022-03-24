@@ -55,7 +55,7 @@ class SwerveDrive {
     frc::ChassisSpeeds m_desiredSpeeds;
     frc::ChassisSpeeds m_trueSpeeds;
 
-    std::shared_ptr<PathManager> m_pathManager = std::make_shared<PathManager>();
+    std::shared_ptr<PathManager> m_pathManager;
 
     frc::SwerveDriveOdometry<4> m_odometry{m_kinematics, GetAngle()};
     // Add Gyro
@@ -63,13 +63,14 @@ class SwerveDrive {
 
 
     public:
-    SwerveDrive();
+    SwerveDrive(std::shared_ptr<PathManager> pathManager);
     
     void Init(bool autonomous = false, frc::Pose2d initialPose = frc::Pose2d(0_m, 0_m, 0_rad));
     void Periodic();
     void Drive(double forward, double right, double turn);
     void Drive(double forward, double right, double turn, bool driveFieldRelative);
     bool FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName);
+    bool FollowTrajectory(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName);
 
     void ResetSpeeds();
     void CalibrateWheelsManually();

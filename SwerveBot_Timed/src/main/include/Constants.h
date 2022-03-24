@@ -88,6 +88,7 @@ namespace POSES {
         double X; // across length of field, postive towards forward (to opponent's alliance station)
         double Y; // across width of field, positive towards left
         double ROT; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW)
+        std::string NAME;
 
         frc::Translation2d toTranslation() const {
             return frc::Translation2d(units::foot_t(X), units::foot_t(Y));
@@ -95,23 +96,55 @@ namespace POSES {
         frc::Pose2d toPose() const {
             return frc::Pose2d(this->toTranslation(), frc::Rotation2d(units::angle::radian_t(ROT)));
         }
-        field_pose(double x, double y, double rot) {
+        field_pose(double x, double y, double rot, std::string name) {
             X = x;
             Y = y;
             ROT = rot;
+            NAME = name;
         }
     };
     // (0, 0, 0) means robot is in the center of the field, facing the opponent's alliance station
     // ^^^^^^^^^ or we change the world coordinates to whatever we want ^^^^^^^^^
 
-    const field_pose AUTON_LEFT_START {3.0, 10.0, -30.0*M_PI/180.0};
-    const field_pose BALL_1{0, 0, 0};
-    const field_pose BALL_2{0, 0, 0};
+    const field_pose AUTON_LEFT_START {-3.0, 3.0, -30.0*M_PI/180.0, "Left Start"};
+    const field_pose AUTON_MIDDLE_START {-4.0, 0, 0, "Middle Start"};
+    const field_pose AUTON_RIGHT_START {-3.0, -3.0, 30.0*M_PI/180.0, "Right Start"};
+
+    // Separate ball poses into clearer ones rather than numbers? or number for different side starts
+    const field_pose BALL_1{0, 0, 0, "Ball 1"}; 
+    const field_pose BALL_2{0, 0, 0, "Ball 2"};
+    const field_pose BALL_3{0, 0, 0, "Ball 3"};
+    const field_pose BALL_4{0, 0, 0, "Ball 4"};
+    const field_pose BALL_5{0, 0, 0, "Ball 5"};
+
+    const field_pose IMPORTANT_WAYPOINT_EXAMPLE{0, 0, 0, "Waypoint Example"}; // could be a start or end position, but also a useful waypoint for a trajectory where toTranslation is used
+
+    // these might be the same as a ball pose
+    const field_pose SHOOTING_SPOT_LEFT{0, 0, 0, "Shoot Left"};  
+    const field_pose SHOOTING_SPOT_MIDDLE{0, 0, 0, "Shoot Middle"};
+    const field_pose SHOOTING_SPOT_RIGHT{0, 0, 0, "Shoot Right"};
 }
 
 // Information needed for TrajectoryGenerator
 namespace TRAJECTORIES {
     const frc::Pose2d trajectoryTolerance{units::foot_t(0.05), units::foot_t(0.05), frc::Rotation2d(units::radian_t(0.05))};
 
-    // Add names here?
+    // Add names here
+    const std::string LEFT_START_TO_BALL_1 = "Left Start to Ball 1";
+    const std::string BALL_1_TO_BALL_2 = "Ball 1 to Ball 2";
+    const std::string LEFT_START_TO_BALL_2 = "Left Start to Ball 2";
+    const std::string BALL_2_TO_BALL_3 = "Ball 2 to Ball 3";
+    const std::string BALL_3_TO_BALL_4 = "Ball 3 to Ball 4";
+    const std::string BALL_4_TO_BALL_5 = "Ball 4 to Ball 5";
+    const std::string BALL_5_TO_SHOOTING_SPOT_LEFT = "Ball 5 to Shooting Spot Left";
+    const std::string BALL_5_TO_SHOOTING_SPOT_MIDDLE = "Ball 5 to Shooting Spot Middle";
+    const std::string BALL_5_TO_SHOOTING_SPOT_RIGHT = "Ball 5 to Shooting Spot Right";
+
+}
+
+namespace AUTON {
+    // Naming convention (no spaces): X-Y
+    // X = starting position -> {Left, Middle, Right}
+    // Y = # of balls -> {1, 2, 3, 4, 5, ?}
+    const std::vector<std::string> AUTO_LIST = {"Left-1", "Left-2", "Left-3", "Left-4", "Left-5"};
 }

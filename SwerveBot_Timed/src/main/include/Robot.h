@@ -9,6 +9,8 @@
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
 #include "Teleop.h"
+#include "Auton.h"
+#include "PathManager.h"
 
 class Robot : public frc::TimedRobot {
  public:
@@ -29,6 +31,8 @@ class Robot : public frc::TimedRobot {
   const std::string kAutoNameCustom = "My Auto";
   std::string m_autoSelected;
 
-  Teleop* m_teleop;
-  SwerveDrive* m_drive;
+  std::shared_ptr<PathManager> m_pathManager = std::make_shared<PathManager>(m_pathManager);
+  std::shared_ptr<SwerveDrive> m_drive = std::make_shared<SwerveDrive>(m_pathManager);
+  std::shared_ptr<Teleop> m_teleop = std::make_shared<Teleop>(m_drive, m_pathManager);
+  std::shared_ptr<Auton> m_auton = std::make_shared<Auton>(m_drive, m_pathManager);
 };
