@@ -6,6 +6,7 @@ Teleop::Teleop(std::shared_ptr<SwerveDrive> drive, std::shared_ptr<PathManager> 
 }
 
 void Teleop::Init() {
+    m_pathManager->SetEnabled(true);
     m_drive->Init();
 }
 

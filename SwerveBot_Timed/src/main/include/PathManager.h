@@ -39,7 +39,10 @@ class PathManager {
     frc::ChassisSpeeds CalculateSpeeds(units::time::second_t currentTime, std::string trajectoryName, frc::Pose2d currentPose, frc::Rotation2d currentHeading);
     frc::ChassisSpeeds CalculateSpeeds(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName, frc::Pose2d currentPose, frc::Rotation2d currentHeading);
 
-    bool IsTrajectoryFinished(units::time::second_t currentTime, std::string trajectoryName);
+    double TrajectoryStatus(units::time::second_t currentTime, std::string trajectoryName);
+
+    bool AtTarget();
+    void SetEnabled(bool enabled);
     
 
 };

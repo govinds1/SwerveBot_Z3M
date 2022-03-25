@@ -83,6 +83,7 @@ namespace SPEEDS {
 // Examples: Auton starts, scoring locations, corners of the field other landmarks, etc
 // as a side note, it is possible to do a more dynamic calibration with vision, so adding in vision target locations is helpful as well
 // Also used for spline trajectories, as start/end locations or waypoints
+// https://firstfrc.blob.core.windows.net/frc2022/FieldAssets/2022LayoutMarkingDiagram.pdf
 namespace POSES {
     struct field_pose {
         double X; // across length of field, postive towards forward (to opponent's alliance station)
@@ -106,39 +107,48 @@ namespace POSES {
     // (0, 0, 0) means robot is in the center of the field, facing the opponent's alliance station
     // ^^^^^^^^^ or we change the world coordinates to whatever we want ^^^^^^^^^
 
-    const field_pose AUTON_LEFT_START {-3.0, 3.0, -30.0*M_PI/180.0, "Left Start"};
+    const field_pose AUTON_LEFT_START {-3.0, 3.0, -1.57, "Left Start"};
     const field_pose AUTON_MIDDLE_START {-4.0, 0, 0, "Middle Start"};
-    const field_pose AUTON_RIGHT_START {-3.0, -3.0, 30.0*M_PI/180.0, "Right Start"};
+    const field_pose AUTON_RIGHT_START {-3.0, -3.0, 1.57, "Right Start"};
 
-    // Separate ball poses into clearer ones rather than numbers? or number for different side starts
-    const field_pose BALL_1{0, 0, 0, "Ball 1"}; 
-    const field_pose BALL_2{0, 0, 0, "Ball 2"};
-    const field_pose BALL_3{0, 0, 0, "Ball 3"};
-    const field_pose BALL_4{0, 0, 0, "Ball 4"};
-    const field_pose BALL_5{0, 0, 0, "Ball 5"};
+    // For try hard auton where you just "recursively" go through balls
+    // const field_pose BALL_1{0, 0, 0, "Ball 1"}; // Far right ball
+    // const field_pose BALL_2{0, 0, 0, "Ball 2"}; // Right side ball closer to center
+    // const field_pose BALL_3{0, 0, 0, "Ball 3"}; // Human player station
+    // const field_pose BALL_4{0, 0, 0, "Ball 4"}; // Far left ball
 
-    const field_pose IMPORTANT_WAYPOINT_EXAMPLE{0, 0, 0, "Waypoint Example"}; // could be a start or end position, but also a useful waypoint for a trajectory where toTranslation is used
+    // Set these Poses to be where you want the ROBOT to be, not exactly on the ball! So that intake can face it and drive forward a little to pick it up
+    // ex. Right Ball should be set so the robot intake faces the right wall and is a little to the left of where the ball actually sits
+    const field_pose BALL_RIGHT{-30 / 12.0, -145 / 12.0, -90 * M_PI / 180.0, "Right Ball"}; // Ball on far right
+    const field_pose BALL_MIDDLE{-112 / 12.0, -82 / 12.0, 180.0, "Middle Ball"}; // Ball in center-ish
+    const field_pose BALL_LEFT{-112 / 12.0, 82 / 12.0, 180.0, "Left Ball"}; // Ball on left
+    const field_pose BALL_HUMAN_PLAYER{-256 / 12.0, -112 / 12.0, -133.75 * M_PI / 180.0, "Human Player Ball"}; // Ball by human player station
 
     // these might be the same as a ball pose
+    // these should be exact where you want, face the hub but no need to come at it from a certain side
     const field_pose SHOOTING_SPOT_LEFT{0, 0, 0, "Shoot Left"};  
     const field_pose SHOOTING_SPOT_MIDDLE{0, 0, 0, "Shoot Middle"};
     const field_pose SHOOTING_SPOT_RIGHT{0, 0, 0, "Shoot Right"};
+
+
+    const field_pose IMPORTANT_WAYPOINT_EXAMPLE{0, 0, 0, "Waypoint Example"}; // could be a start or end position, but also a useful waypoint for a trajectory where toTranslation is used
+    const field_pose CENTRAL_WAYPOINT{-200.0 / 12.0, -65.0 / 12.0, 0, "Central Waypoint"}; // Good place to put as a waypoint to not hit the hangar and for good lines to other places
 }
 
 // Information needed for TrajectoryGenerator
 namespace TRAJECTORIES {
     const frc::Pose2d trajectoryTolerance{units::foot_t(0.05), units::foot_t(0.05), frc::Rotation2d(units::radian_t(0.05))};
 
-    // Add names here
-    const std::string LEFT_START_TO_BALL_1 = "Left Start to Ball 1";
-    const std::string BALL_1_TO_BALL_2 = "Ball 1 to Ball 2";
-    const std::string LEFT_START_TO_BALL_2 = "Left Start to Ball 2";
-    const std::string BALL_2_TO_BALL_3 = "Ball 2 to Ball 3";
-    const std::string BALL_3_TO_BALL_4 = "Ball 3 to Ball 4";
-    const std::string BALL_4_TO_BALL_5 = "Ball 4 to Ball 5";
-    const std::string BALL_5_TO_SHOOTING_SPOT_LEFT = "Ball 5 to Shooting Spot Left";
-    const std::string BALL_5_TO_SHOOTING_SPOT_MIDDLE = "Ball 5 to Shooting Spot Middle";
-    const std::string BALL_5_TO_SHOOTING_SPOT_RIGHT = "Ball 5 to Shooting Spot Right";
+    // Full names not necessary, they are created from field_pose names
+    // const std::string LEFT_START_TO_BALL_1 = "Left Start to Ball 1";
+    // const std::string BALL_1_TO_BALL_2 = "Ball 1 to Ball 2";
+    // const std::string LEFT_START_TO_BALL_2 = "Left Start to Ball 2";
+    // const std::string BALL_2_TO_BALL_3 = "Ball 2 to Ball 3";
+    // const std::string BALL_3_TO_BALL_4 = "Ball 3 to Ball 4";
+    // const std::string BALL_4_TO_BALL_5 = "Ball 4 to Ball 5";
+    // const std::string BALL_5_TO_SHOOTING_SPOT_LEFT = "Ball 5 to Shooting Spot Left";
+    // const std::string BALL_5_TO_SHOOTING_SPOT_MIDDLE = "Ball 5 to Shooting Spot Middle";
+    // const std::string BALL_5_TO_SHOOTING_SPOT_RIGHT = "Ball 5 to Shooting Spot Right";
 
 }
 
@@ -147,4 +157,6 @@ namespace AUTON {
     // X = starting position -> {Left, Middle, Right}
     // Y = # of balls -> {1, 2, 3, 4, 5, ?}
     const std::vector<std::string> AUTO_LIST = {"Left-1", "Left-2", "Left-3", "Left-4", "Left-5"};
+    const units::time::second_t SHOOT_TIME = 1.5_s;
+    const units::time::second_t INTAKE_TIME = 1.0_s;
 }

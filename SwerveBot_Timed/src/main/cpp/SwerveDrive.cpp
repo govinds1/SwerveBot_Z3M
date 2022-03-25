@@ -58,14 +58,13 @@ void SwerveDrive::Drive(double forward, double right, double turn, bool driveFie
     SetFieldRelative(fieldRelSaved);
 }
 
-bool SwerveDrive::FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName) {
+double SwerveDrive::FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName) {
     SetDesiredSpeeds(m_pathManager->CalculateSpeeds(currentTime, trajectoryName, m_odometry.GetPose(), GetAngle()));
-    return m_pathManager->IsTrajectoryFinished(currentTime, trajectoryName);
+    return m_pathManager->TrajectoryStatus(currentTime, trajectoryName);
 }
 
-bool SwerveDrive::FollowTrajectory(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName) {
-    SetDesiredSpeeds(m_pathManager->CalculateSpeeds(currentTime, startPoseName, endPoseName, m_odometry.GetPose(), GetAngle()));
-    return m_pathManager->IsTrajectoryFinished(currentTime, m_pathManager->ConcatPoseNames(startPoseName, endPoseName));
+double SwerveDrive::FollowTrajectory(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName) {
+    return FollowTrajectory(currentTime, m_pathManager->ConcatPoseNames(startPoseName, endPoseName));
 }
 
 void SwerveDrive::ResetSpeeds() {

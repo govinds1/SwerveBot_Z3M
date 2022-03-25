@@ -2,15 +2,67 @@
 
 PathManager::PathManager() {
     // Add Trajectories here
-    GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_1);
-    GenTrajectory(POSES::BALL_1, POSES::BALL_2);
-    GenTrajectory(POSES::BALL_2, POSES::BALL_3);
-    GenTrajectory(POSES::BALL_3, POSES::BALL_4);
-    GenTrajectory(POSES::BALL_4, POSES::BALL_5);
-    GenTrajectory(POSES::BALL_5, POSES::SHOOTING_SPOT_LEFT);
-    GenTrajectory(POSES::BALL_5, POSES::SHOOTING_SPOT_MIDDLE);
-    GenTrajectory(POSES::BALL_5, POSES::SHOOTING_SPOT_RIGHT);
-    AddTrajectory(TRAJECTORIES::LEFT_START_TO_BALL_2, trajectories[TRAJECTORIES::LEFT_START_TO_BALL_1] + trajectories[TRAJECTORIES::BALL_1_TO_BALL_2]);
+    std::vector<POSES::field_pose> center_waypoint = {POSES::CENTRAL_WAYPOINT};
+    GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_RIGHT, center_waypoint);
+    GenTrajectory(POSES::AUTON_MIDDLE_START, POSES::BALL_RIGHT);
+    GenTrajectory(POSES::AUTON_RIGHT_START, POSES::BALL_RIGHT);
+
+    GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::AUTON_MIDDLE_START, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::AUTON_RIGHT_START, POSES::BALL_MIDDLE);
+
+    GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_LEFT);
+    GenTrajectory(POSES::AUTON_MIDDLE_START, POSES::BALL_LEFT);
+    GenTrajectory(POSES::AUTON_RIGHT_START, POSES::BALL_LEFT, center_waypoint);
+
+    GenTrajectory(POSES::AUTON_LEFT_START, POSES::BALL_HUMAN_PLAYER, center_waypoint);
+    GenTrajectory(POSES::AUTON_MIDDLE_START, POSES::BALL_HUMAN_PLAYER, center_waypoint);
+    GenTrajectory(POSES::AUTON_RIGHT_START, POSES::BALL_HUMAN_PLAYER, center_waypoint);
+
+    GenTrajectory(POSES::BALL_RIGHT, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::BALL_RIGHT, POSES::BALL_LEFT, center_waypoint);
+    GenTrajectory(POSES::BALL_RIGHT, POSES::BALL_HUMAN_PLAYER, center_waypoint);
+    GenTrajectory(POSES::BALL_RIGHT, POSES::SHOOTING_SPOT_LEFT, center_waypoint);
+    GenTrajectory(POSES::BALL_RIGHT, POSES::SHOOTING_SPOT_MIDDLE, center_waypoint);
+    GenTrajectory(POSES::BALL_RIGHT, POSES::SHOOTING_SPOT_RIGHT);
+
+    GenTrajectory(POSES::BALL_MIDDLE, POSES::BALL_RIGHT);
+    GenTrajectory(POSES::BALL_MIDDLE, POSES::BALL_LEFT);
+    GenTrajectory(POSES::BALL_MIDDLE, POSES::BALL_HUMAN_PLAYER);
+    GenTrajectory(POSES::BALL_MIDDLE, POSES::SHOOTING_SPOT_LEFT);
+    GenTrajectory(POSES::BALL_MIDDLE, POSES::SHOOTING_SPOT_MIDDLE);
+    GenTrajectory(POSES::BALL_MIDDLE, POSES::SHOOTING_SPOT_RIGHT);
+
+    GenTrajectory(POSES::BALL_LEFT, POSES::BALL_RIGHT);
+    GenTrajectory(POSES::BALL_LEFT, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::BALL_LEFT, POSES::BALL_HUMAN_PLAYER);
+    GenTrajectory(POSES::BALL_LEFT, POSES::SHOOTING_SPOT_LEFT);
+    GenTrajectory(POSES::BALL_LEFT, POSES::SHOOTING_SPOT_MIDDLE);
+    GenTrajectory(POSES::BALL_LEFT, POSES::SHOOTING_SPOT_RIGHT);
+
+    GenTrajectory(POSES::BALL_HUMAN_PLAYER, POSES::BALL_RIGHT, center_waypoint);
+    GenTrajectory(POSES::BALL_HUMAN_PLAYER, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::BALL_HUMAN_PLAYER, POSES::BALL_LEFT, center_waypoint);
+    GenTrajectory(POSES::BALL_HUMAN_PLAYER, POSES::SHOOTING_SPOT_LEFT, center_waypoint);
+    GenTrajectory(POSES::BALL_HUMAN_PLAYER, POSES::SHOOTING_SPOT_MIDDLE, center_waypoint);
+    GenTrajectory(POSES::BALL_HUMAN_PLAYER, POSES::SHOOTING_SPOT_RIGHT, center_waypoint);
+
+    GenTrajectory(POSES::SHOOTING_SPOT_LEFT, POSES::BALL_RIGHT, center_waypoint);
+    GenTrajectory(POSES::SHOOTING_SPOT_LEFT, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::SHOOTING_SPOT_LEFT, POSES::BALL_LEFT);
+    GenTrajectory(POSES::SHOOTING_SPOT_LEFT, POSES::BALL_HUMAN_PLAYER, center_waypoint);
+
+    GenTrajectory(POSES::SHOOTING_SPOT_MIDDLE, POSES::BALL_RIGHT, center_waypoint);
+    GenTrajectory(POSES::SHOOTING_SPOT_MIDDLE, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::SHOOTING_SPOT_MIDDLE, POSES::BALL_LEFT);
+    GenTrajectory(POSES::SHOOTING_SPOT_MIDDLE, POSES::BALL_HUMAN_PLAYER, center_waypoint);
+
+    GenTrajectory(POSES::SHOOTING_SPOT_RIGHT, POSES::BALL_RIGHT);
+    GenTrajectory(POSES::SHOOTING_SPOT_RIGHT, POSES::BALL_MIDDLE);
+    GenTrajectory(POSES::SHOOTING_SPOT_RIGHT, POSES::BALL_LEFT, center_waypoint);
+    GenTrajectory(POSES::SHOOTING_SPOT_RIGHT, POSES::BALL_HUMAN_PLAYER, center_waypoint);
+
+    //AddTrajectory(TRAJECTORIES::LEFT_START_TO_BALL_2, trajectories[TRAJECTORIES::LEFT_START_TO_BALL_1] + trajectories[TRAJECTORIES::BALL_1_TO_BALL_2]);
 
     swerveDriveController.SetTolerance(TRAJECTORIES::trajectoryTolerance);
 }
@@ -47,6 +99,14 @@ frc::ChassisSpeeds PathManager::CalculateSpeeds(units::time::second_t currentTim
     return swerveDriveController.Calculate(currentPose, desiredState, currentHeading);
 }
 
-bool PathManager::IsTrajectoryFinished(units::time::second_t currentTime, std::string trajectoryName) {
-    return trajectories[trajectoryName].TotalTime() > currentTime;
+double PathManager::TrajectoryStatus(units::time::second_t currentTime, std::string trajectoryName) {
+    return (currentTime / trajectories[trajectoryName].TotalTime());
+}
+
+bool PathManager::AtTarget() {
+    return swerveDriveController.AtReference();
+}
+
+void PathManager::SetEnabled(bool enabled) {
+    swerveDriveController.SetEnabled(enabled);
 }

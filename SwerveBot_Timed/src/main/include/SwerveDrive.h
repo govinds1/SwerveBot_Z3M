@@ -69,8 +69,8 @@ class SwerveDrive {
     void Periodic();
     void Drive(double forward, double right, double turn);
     void Drive(double forward, double right, double turn, bool driveFieldRelative);
-    bool FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName);
-    bool FollowTrajectory(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName);
+    double FollowTrajectory(units::time::second_t currentTime, std::string trajectoryName);
+    double FollowTrajectory(units::time::second_t currentTime, std::string startPoseName, std::string endPoseName);
 
     void ResetSpeeds();
     void CalibrateWheelsManually();
