@@ -43,6 +43,7 @@ void Auton::Init() {
     m_stateStartTime = frc::Timer::GetFPGATimestamp();
     m_autoState = 0;
     m_ballsShot = 0;
+    m_ballsHolding = 1;
     m_pathManager->SetEnabled(true);
 }
 
@@ -58,25 +59,120 @@ void Auton::Periodic() {
         RightStartAuto();
         break;
     default: // kAbort -> bad name
-        
+        m_swerveDrive->Drive(0.1, 0, 0.1);
         break;
     }
 }
 
 void Auton::LeftStartAuto() {
-
+    if (m_ballsShot >= m_ballsDesired) {
+        // m_swerveDrive->FollowTrajectory(GetStateTime(), m_currentPosition, POSES::BALL_MIDDLE.NAME);
+        // if (m_pathManager->AtTarget()) {
+        //     m_pathManager->SetEnabled(false);
+        // }
+        m_swerveDrive->Drive(0, 0, 0);
+    } else {
+        switch (m_autoState) {
+        case 0: // Get to first ball and run up shooter and intake
+            GoToPose(POSES::BALL_LEFT.NAME, true, true);
+            break;
+        case 1: // Intake first ball and run shooter to shoot pre-loaded and it
+            WaitForMechanism(true, true);
+            break;
+        case 2: // Get to second ball
+            GoToPose(POSES::BALL_MIDDLE.NAME, true, true);
+            break;
+        case 3: // Intake second ball and shoot it
+            WaitForMechanism(true, true);
+            break;
+        case 4: // Get to third ball
+            GoToPose(POSES::BALL_HUMAN_PLAYER.NAME, false, true);
+            break;
+        case 5: // Wait to intake third ball
+            WaitForMechanism(false, true);
+            break;
+        case 6: // Intake fourth ball from human player
+            WaitForMechanism(false, true);
+            break;
+        case 7: // Get to shooting spot
+            GoToPose(POSES::SHOOTING_SPOT_RIGHT.NAME, true, false);
+            break;
+        case 8: // Shoot both
+            WaitForMechanism(true, false);
+            break;
+        case 9: // Get to last ball
+            GoToPose(POSES::BALL_RIGHT.NAME, true, true);
+            break;
+        case 10: // Shoot
+            WaitForMechanism(true, true);
+            break;
+        default: 
+            m_ballsShot = m_ballsDesired;
+            m_swerveDrive->Drive(0, 0, 0);
+            NextState();
+            break;
+        }
+    }
 }
 
 void Auton::MiddleStartAuto() {
-
+    if (m_ballsShot >= m_ballsDesired) {
+        // m_swerveDrive->FollowTrajectory(GetStateTime(), m_currentPosition, POSES::BALL_MIDDLE.NAME);
+        // if (m_pathManager->AtTarget()) {
+        //     m_pathManager->SetEnabled(false);
+        // }
+        m_swerveDrive->Drive(0, 0, 0);
+    } else {
+        switch (m_autoState) {
+        case 0: // Get to first ball and run up shooter and intake
+            GoToPose(POSES::BALL_LEFT.NAME, true, true);
+            break;
+        case 1: // Intake first ball and run shooter to shoot pre-loaded and it
+            WaitForMechanism(true, true);
+            break;
+        case 2: // Get to second ball
+            GoToPose(POSES::BALL_MIDDLE.NAME, true, true);
+            break;
+        case 3: // Intake second ball and shoot it
+            WaitForMechanism(true, true);
+            break;
+        case 4: // Get to third ball
+            GoToPose(POSES::BALL_HUMAN_PLAYER.NAME, false, true);
+            break;
+        case 5: // Wait to intake third ball
+            WaitForMechanism(false, true);
+            break;
+        case 6: // Intake fourth ball from human player
+            WaitForMechanism(false, true);
+            break;
+        case 7: // Get to shooting spot
+            GoToPose(POSES::SHOOTING_SPOT_RIGHT.NAME, true, false);
+            break;
+        case 8: // Shoot both
+            WaitForMechanism(true, false);
+            break;
+        case 9: // Get to last ball
+            GoToPose(POSES::BALL_RIGHT.NAME, true, true);
+            break;
+        case 10: // Shoot
+            WaitForMechanism(true, true);
+            break;
+        default: 
+            m_ballsShot = m_ballsDesired;
+            m_swerveDrive->Drive(0, 0, 0);
+            NextState();
+            break;
+        }
+    }
 }
 
 void Auton::RightStartAuto() {
     if (m_ballsShot >= m_ballsDesired) {
-        m_swerveDrive->FollowTrajectory(GetStateTime(), m_currentPosition, POSES::BALL_RIGHT.NAME);
-        if (m_pathManager->AtTarget()) {
-            m_pathManager->SetEnabled(false);
-        }
+        // m_swerveDrive->FollowTrajectory(GetStateTime(), m_currentPosition, POSES::BALL_RIGHT.NAME);
+        // if (m_pathManager->AtTarget()) {
+        //     m_pathManager->SetEnabled(false);
+        // }
+        m_swerveDrive->Drive(0, 0, 0);
     } else {
         switch (m_autoState) {
         case 0: // Get to first ball and run up shooter and intake
@@ -94,14 +190,28 @@ void Auton::RightStartAuto() {
         case 4: // Get to third ball
             GoToPose(POSES::BALL_HUMAN_PLAYER.NAME, false, true);
             break;
-        case 5: // Wait to intake third ball and fourth passed from human player
+        case 5: // Wait to intake third ball
             WaitForMechanism(false, true);
             break;
-        case 6: // Get to shooting spot
-            GoToPose(POSES::SHOOTING_SPOT_RIGHT.NAME, true, false);
+        case 6: // Intake fourth ball from human player
+            WaitForMechanism(false, true);
             break;
-        case 7: // Shoot both
+        case 7: // Get to shooting spot
+            GoToPose(POSES::SHOOTING_SPOT_LEFT.NAME, true, false);
+            break;
+        case 8: // Shoot both
             WaitForMechanism(true, false);
+            break;
+        case 9: // Get to last ball
+            GoToPose(POSES::BALL_LEFT.NAME, true, true);
+            break;
+        case 10: // Shoot
+            WaitForMechanism(true, true);
+            break;
+        default: 
+            m_ballsShot = m_ballsDesired;
+            m_swerveDrive->Drive(0, 0, 0);
+            NextState();
             break;
         }
     }
@@ -118,9 +228,6 @@ void Auton::GoToPose(const std::string &poseName, bool shoot, bool intake) {
         }
     } else if (percentProgress >= 1.0 || m_pathManager->AtTarget()) {
         m_currentPosition = poseName;
-        if (intake) {
-            m_ballsHolding++;
-        }
         m_swerveDrive->Drive(0, 0, 0);
         NextState();
     }
@@ -135,9 +242,9 @@ void Auton::WaitForMechanism(bool shoot, bool intake) {
             m_ballsShot += m_ballsHolding;
             m_ballsHolding = 0;
         }
+        m_swerveDrive->Drive(0, 0, 0);
         NextState();
     } else {
-        m_swerveDrive->Drive(0, 0, 0);
         if (shoot) {
             // keep shooter running
             // run conveyor

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "SwerveDrive.h"
 #include <frc/XboxController.h>
+#include "SwerveDrive.h"
 
 class Teleop {
     frc::XboxController m_driverController{0};

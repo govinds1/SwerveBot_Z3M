@@ -11,6 +11,7 @@
 #include <units/angular_acceleration.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/geometry/Pose2d.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 namespace MOTOR_CAN_ID {
     struct wheel_module {
@@ -40,10 +41,20 @@ namespace ENCODER_CONVERSIONS {
 }
 
 namespace ENCODER_ZEROS {
-    int LEFT_FRONT = 0;
-    int LEFT_REAR = 0;
-    int RIGHT_FRONT = 0;
-    int RIGHT_REAR = 0;
+    // const int LEFT_FRONT = frc::SmartDashboard::GetNumber("Wheel Module/Left Front/Angle/Encoder Zero", 0);
+    // const int LEFT_REAR = frc::SmartDashboard::GetNumber("Wheel Module/Left Rear/Angle/Encoder Zero", 0);
+    // const int RIGHT_FRONT = frc::SmartDashboard::GetNumber("Wheel Module/Right Front/Angle/Encoder Zero", 0);
+    // const int RIGHT_REAR = frc::SmartDashboard::GetNumber("Wheel Module/Right Rear/Angle/Encoder Zero", 0);
+
+    // defined in Constants.cpp
+    extern int LEFT_FRONT;
+    extern int LEFT_REAR;
+    extern int RIGHT_FRONT;
+    extern int RIGHT_REAR;
+    // int LEFT_FRONT = 0;
+    // int LEFT_REAR = 0;
+    // int RIGHT_FRONT = 0;
+    // int RIGHT_REAR = 0;
 }
 
 namespace PID_VALUES { // Might have to make separate values for each wheel?

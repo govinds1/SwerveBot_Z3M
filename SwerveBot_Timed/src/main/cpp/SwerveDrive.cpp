@@ -84,10 +84,17 @@ void SwerveDrive::CalibrateWheelsManually() {
     m_rightFront->CalibrateAngle();
     m_rightRear->CalibrateAngle();
 
+
     ENCODER_ZEROS::LEFT_FRONT = m_leftFront->GetRawAngle();
     ENCODER_ZEROS::LEFT_REAR = m_leftRear->GetRawAngle();
     ENCODER_ZEROS::RIGHT_FRONT = m_rightFront->GetRawAngle();
     ENCODER_ZEROS::RIGHT_REAR = m_rightRear->GetRawAngle();
+    // ENCODER_ZEROS::SET_ZEROS(
+    //     m_leftFront->GetRawAngle(), 
+    //     m_leftRear->GetRawAngle(),
+    //     m_rightFront->GetRawAngle(), 
+    //     m_rightRear->GetRawAngle()
+    // );
 }
 
 

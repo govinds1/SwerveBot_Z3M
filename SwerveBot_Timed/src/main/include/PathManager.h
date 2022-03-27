@@ -15,7 +15,6 @@
 
 #include "Constants.h"
 
-
 class PathManager {
 
     std::unordered_map<std::string, frc::Trajectory> trajectories;

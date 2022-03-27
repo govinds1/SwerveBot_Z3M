@@ -7,7 +7,6 @@
 #include <string>
 
 #include <frc/TimedRobot.h>
-#include <frc/smartdashboard/SendableChooser.h>
 #include "Teleop.h"
 #include "Auton.h"
 #include "PathManager.h"
@@ -26,12 +25,8 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
 
  private:
-  frc::SendableChooser<std::string> m_chooser;
-  const std::string kAutoNameDefault = "Default";
-  const std::string kAutoNameCustom = "My Auto";
-  std::string m_autoSelected;
 
-  std::shared_ptr<PathManager> m_pathManager = std::make_shared<PathManager>(m_pathManager);
+  std::shared_ptr<PathManager> m_pathManager = std::make_shared<PathManager>();
   std::shared_ptr<SwerveDrive> m_drive = std::make_shared<SwerveDrive>(m_pathManager);
   std::shared_ptr<Teleop> m_teleop = std::make_shared<Teleop>(m_drive, m_pathManager);
   std::shared_ptr<Auton> m_auton = std::make_shared<Auton>(m_drive, m_pathManager);
