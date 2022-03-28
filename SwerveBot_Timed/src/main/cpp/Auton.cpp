@@ -59,7 +59,15 @@ void Auton::Periodic() {
         RightStartAuto();
         break;
     default: // kAbort -> bad name
-        m_swerveDrive->Drive(0.1, 0, 0.1);
+        if (GetStateTime() <= 3_s) {
+            m_swerveDrive->Drive(0.3, 0, 0.3);
+        } else {
+            m_swerveDrive->Drive(
+                std::sin(GetStateTimeValue() * 3.14 / 2.0) * 0.4,
+                std::cos(GetStateTimeValue() * 3.14 / 2.0) * 0.4,
+                std::cos(GetStateTimeValue() * 3.14 / 2.0) * 0.4
+            );
+        }
         break;
     }
 }
@@ -197,7 +205,7 @@ void Auton::RightStartAuto() {
             WaitForMechanism(false, true);
             break;
         case 7: // Get to shooting spot
-            GoToPose(POSES::SHOOTING_SPOT_LEFT.NAME, true, false);
+            GoToPose(POSES::SHOOTING_SPOT_MIDDLE.NAME, true, false);
             break;
         case 8: // Shoot both
             WaitForMechanism(true, false);
@@ -259,6 +267,10 @@ void Auton::WaitForMechanism(bool shoot, bool intake) {
 
 units::time::second_t Auton::GetStateTime() {
     return frc::Timer::GetFPGATimestamp() - m_stateStartTime;
+}
+
+double Auton::GetStateTimeValue() {
+    return GetStateTime().value();
 }
 
 void Auton::NextState() {

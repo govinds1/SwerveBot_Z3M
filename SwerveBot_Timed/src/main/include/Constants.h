@@ -130,6 +130,7 @@ namespace POSES {
 
     // Set these Poses to be where you want the ROBOT to be, not exactly on the ball! So that intake can face it and drive forward a little to pick it up
     // ex. Right Ball should be set so the robot intake faces the right wall and is a little to the left of where the ball actually sits
+    // Add waypoints for each one so you come at the ball from the correct direction (matches given rot so intake can pick it up)
     const field_pose BALL_RIGHT{-30 / 12.0, -145 / 12.0, -90 * M_PI / 180.0, "Right Ball"}; // Ball on far right
     const field_pose BALL_MIDDLE{-112 / 12.0, -82 / 12.0, 180.0, "Middle Ball"}; // Ball in center-ish
     const field_pose BALL_LEFT{-112 / 12.0, 82 / 12.0, 180.0, "Left Ball"}; // Ball on left
@@ -137,9 +138,9 @@ namespace POSES {
 
     // these might be the same as a ball pose
     // these should be exact where you want, face the hub but no need to come at it from a certain side
-    const field_pose SHOOTING_SPOT_LEFT{0, 0, 0, "Shoot Left"};  
-    const field_pose SHOOTING_SPOT_MIDDLE{0, 0, 0, "Shoot Middle"};
-    const field_pose SHOOTING_SPOT_RIGHT{0, 0, 0, "Shoot Right"};
+    const field_pose SHOOTING_SPOT_LEFT{-50 / 12.0, 110 / 12.0, -30 * M_PI / 180.0, "Shoot Left"};  
+    const field_pose SHOOTING_SPOT_MIDDLE{-150 / 12.0, 0, 0, "Shoot Middle"};
+    const field_pose SHOOTING_SPOT_RIGHT{-50 / 12.0, -110 / 12.0, 30 * M_PI / 180.0, "Shoot Right"};
 
 
     const field_pose IMPORTANT_WAYPOINT_EXAMPLE{0, 0, 0, "Waypoint Example"}; // could be a start or end position, but also a useful waypoint for a trajectory where toTranslation is used

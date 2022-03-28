@@ -34,5 +34,6 @@ class Auton {
     void WaitForMechanism(bool shoot, bool intake);
 
     units::time::second_t GetStateTime();
+    double GetStateTimeValue();
     void NextState();
 };
