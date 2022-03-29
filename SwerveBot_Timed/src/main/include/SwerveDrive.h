@@ -3,7 +3,7 @@
 #include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/kinematics/SwerveDriveOdometry.h>
 #include <frc/kinematics/ChassisSpeeds.h>
-#include <frc/interfaces/Gyro.h>
+#include <frc/ADXRS450_Gyro.h>
 #include <rev/CANSparkMax.h>
 #include <rev/CANSparkMaxLowLevel.h>
 
@@ -38,6 +38,24 @@ class SwerveDrive {
     std::shared_ptr<rev::SparkMaxPIDController> m_rightRearDrivePIDController = std::make_shared<rev::SparkMaxPIDController>(m_rightRearDrive->GetPIDController());
     std::shared_ptr<rev::SparkMaxPIDController> m_rightRearAnglePIDController = std::make_shared<rev::SparkMaxPIDController>(m_rightRearAngle->GetPIDController());
 
+    // rev::SparkMaxRelativeEncoder m_leftFrontDriveEncoder = m_leftFrontDrive->GetEncoder();
+    // rev::SparkMaxRelativeEncoder m_leftFrontAngleEncoder = m_leftFrontAngle->GetEncoder();
+    // rev::SparkMaxRelativeEncoder m_leftRearDriveEncoder = m_leftRearDrive->GetEncoder();
+    // rev::SparkMaxRelativeEncoder m_leftRearAngleEncoder = m_leftRearAngle->GetEncoder();
+    // rev::SparkMaxRelativeEncoder m_rightFrontDriveEncoder = m_rightFrontDrive->GetEncoder();
+    // rev::SparkMaxRelativeEncoder m_rightFrontAngleEncoder = m_rightFrontAngle->GetEncoder();
+    // rev::SparkMaxRelativeEncoder m_rightRearDriveEncoder = m_rightRearDrive->GetEncoder();
+    // rev::SparkMaxRelativeEncoder m_rightRearAngleEncoder = m_rightRearAngle->GetEncoder();
+
+    // rev::SparkMaxPIDController m_leftFrontDrivePIDController =  m_leftFrontDrive->GetPIDController();
+    // rev::SparkMaxPIDController m_leftFrontAnglePIDController =  m_leftFrontAngle->GetPIDController();
+    // rev::SparkMaxPIDController m_leftRearDrivePIDController =  m_leftRearDrive->GetPIDController();
+    // rev::SparkMaxPIDController m_leftRearAnglePIDController =  m_leftRearAngle->GetPIDController();
+    // rev::SparkMaxPIDController m_rightFrontDrivePIDController =  m_rightFrontDrive->GetPIDController();
+    // rev::SparkMaxPIDController m_rightFrontAnglePIDController =  m_rightFrontAngle->GetPIDController();
+    // rev::SparkMaxPIDController m_rightRearDrivePIDController =  m_rightRearDrive->GetPIDController();
+    // rev::SparkMaxPIDController m_rightRearAnglePIDController =  m_rightRearAngle->GetPIDController();
+
     WheelModule* m_leftFront = new WheelModule(m_leftFrontDrive, m_leftFrontAngle, m_leftFrontDriveEncoder, m_leftFrontAngleEncoder, m_leftFrontDrivePIDController, m_leftFrontAnglePIDController, ENCODER_ZEROS::LEFT_FRONT);
     WheelModule* m_leftRear = new WheelModule(m_leftRearDrive, m_leftRearAngle, m_leftRearDriveEncoder, m_leftRearAngleEncoder, m_leftRearDrivePIDController, m_leftRearAnglePIDController, ENCODER_ZEROS::LEFT_REAR);
     WheelModule* m_rightFront = new WheelModule(m_rightFrontDrive, m_rightFrontAngle, m_rightFrontDriveEncoder, m_rightFrontAngleEncoder, m_rightFrontDrivePIDController, m_rightFrontAnglePIDController, ENCODER_ZEROS::RIGHT_FRONT);
@@ -59,6 +77,7 @@ class SwerveDrive {
 
     frc::SwerveDriveOdometry<4> m_odometry{m_kinematics, GetAngle()};
     // Add Gyro
+    frc::ADXRS450_Gyro m_gyro;
     bool fieldRelative = false;
 
 

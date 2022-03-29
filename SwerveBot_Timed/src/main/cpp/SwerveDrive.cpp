@@ -161,18 +161,14 @@ void SwerveDrive::SetPose(units::meter_t x, units::meter_t y) {
 
 void SwerveDrive::ResetGyro() {
     // Reset Gyro to a heading of 0 and SetPose so the new angle is updated in odometry
-
-    // gyro.Reset();
+    m_gyro.Reset();
     SetPose(GetPose());
 }
 
 frc::Rotation2d SwerveDrive::GetAngle() {
     // Return Gyro reading
-    // return frc::Rotation2d(gyro.Get());
     // negate if necessary, turning left (CCW) should be positive
-
-    return -frc::Rotation2d(units::angle::radian_t(0));
-
+    return frc::Rotation2d(units::angle::degree_t(m_gyro.GetAngle()));
 }
 
 frc::Pose2d SwerveDrive::GetPose() {
