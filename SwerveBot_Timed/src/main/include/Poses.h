@@ -33,20 +33,20 @@ namespace POSES {
     // ^^^^^^^^^ or we change the world coordinates to whatever we want ^^^^^^^^^
 
     const field_pose AUTON_LEFT_START { // flush against the hub, center of side
-        -(std::sin(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::WHEELBASE_LENGTH.value()) / 12.0), // might be 21??
-        -(std::cos(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::WHEELBASE_LENGTH.value()) / 12.0),
+        -(std::sin(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::CHASSIS_LENGTH.value()) / 12.0), // might be 21??
+        -(std::cos(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::CHASSIS_LENGTH.value()) / 12.0),
         24,
         "Start_L"
     }; 
     const field_pose AUTON_MIDDLE_START { // on edge of tarmac, facing hub and opponent's alliance station
-        -((std::cos(24 * M_PI / 180.0) * (-(118.66 / 12.0))) - DIMENSIONS::WHEELBASE_LENGTH.value()),
+        -((std::cos(24 * M_PI / 180.0) * (-(118.66 / 12.0))) - DIMENSIONS::CHASSIS_LENGTH.value()),
         0,
         0,
         "Start_M"
     };
     const field_pose AUTON_RIGHT_START { // flush against the hub, center of side
-        -(std::cos(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::WHEELBASE_LENGTH.value()) / 12.0),
-        (std::sin(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::WHEELBASE_LENGTH.value()) / 12.0),
+        -(std::cos(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::CHASSIS_LENGTH.value()) / 12.0),
+        (std::sin(24 * M_PI / 180.0) * (67.81 + DIMENSIONS::CHASSIS_LENGTH.value()) / 12.0),
         -24,
         "Start_R"
     };
@@ -88,25 +88,25 @@ namespace POSES {
     // should be one or two feet away from the ball, so that it can drive forward while intaking
     const field_pose BALL_RIGHT_WAYPOINT{ // Ball on far right
         BALL_RIGHT.X,
-        BALL_RIGHT.Y + (DIMENSIONS::CHASSIS_LENGTH * 2 / 12.0),
+        BALL_RIGHT.Y + (DIMENSIONS::CHASSIS_LENGTH.value() * 2 / 12.0),
         BALL_RIGHT.ROT,
         "WPT_Ball_R"
     };
     const field_pose BALL_MIDDLE_WAYPOINT{ // Ball in center-ish
-        BALL_MIDDLE.X + (DIMENSIONS::CHASSIS_LENGTH * 2 / 12.0),
+        BALL_MIDDLE.X + (DIMENSIONS::CHASSIS_LENGTH.value() * 2 / 12.0),
         BALL_MIDDLE.Y,
         BALL_MIDDLE.ROT,
         "WPT_Ball_M"
     };
     const field_pose BALL_LEFT_WAYPOINT{ // Ball on left
-        BALL_LEFT.X + (DIMENSIONS::CHASSIS_LENGTH * 2 / 12.0),
+        BALL_LEFT.X + (DIMENSIONS::CHASSIS_LENGTH.value() * 2 / 12.0),
         BALL_LEFT.Y,
         BALL_LEFT.ROT,
         "WPT_Ball_L"
     };
     const field_pose BALL_HUMAN_PLAYER_WAYPOINT{ // Ball by human player station
-        BALL_HUMAN_PLAYER.X + (DIMENSIONS::CHASSIS_LENGTH * 2 / 12.0), // not exact
-        BALL_HUMAN_PLAYER.Y + (DIMENSIONS::CHASSIS_WIDTH * 2 / 12.0), // not exact
+        BALL_HUMAN_PLAYER.X + (DIMENSIONS::CHASSIS_LENGTH.value() * 2 / 12.0), // not exact
+        BALL_HUMAN_PLAYER.Y + (DIMENSIONS::CHASSIS_WIDTH.value() * 2 / 12.0), // not exact
         BALL_HUMAN_PLAYER.ROT,
         "WPT_Ball_HP"
     };
@@ -132,18 +132,18 @@ namespace POSES {
         "Shoot_R"
     };
     const field_pose LAUNCH_PAD{  // P for (launch) pad
-        (-195.25 + (DIMENSIONS::WHEELBASE_LENGTH.value() / 2)) / 12.0,
+        (-195.25 + (DIMENSIONS::CHASSIS_LENGTH.value() / 2)) / 12.0,
         46 / 12.0,
         0,
         "Shoot_P"
     };
     const field_pose LAUNCH_PAD_WAYPOINT1{ // avoid coming at LP from hangar support
-        (-195.25 + (DIMENSIONS::WHEELBASE_LENGTH.value() * 2)) / 12.0,
+        (-195.25 + (DIMENSIONS::CHASSIS_LENGTH.value() * 2)) / 12.0,
         46 / 12.0,
         0,
         "WPT_Shoot_P_1"
     }; // use central_waypoint as well?
-    // const field_pose LAUNCH_PAD_WAYPOINT2{(-195.25 / 12.0) + (DIMENSIONS::WHEELBASE_LENGTH * 2), 46 / 12.0, 0, "WPT_Shoot_P_2"};
+    // const field_pose LAUNCH_PAD_WAYPOINT2{(-195.25 / 12.0) + (DIMENSIONS::CHASSIS_LENGTH * 2), 46 / 12.0, 0, "WPT_Shoot_P_2"};
 
 
     const field_pose IMPORTANT_WAYPOINT_EXAMPLE{0, 0, 0, "Waypoint Example"}; // could be a start or end position, but also a useful waypoint for a trajectory where toTranslation is used
