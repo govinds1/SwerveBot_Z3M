@@ -84,6 +84,24 @@ void PathManager::GenTrajectory(const POSES::field_pose &start, const POSES::fie
     for (auto wpt : waypoints) {
         wpts.push_back(wpt.toTranslation());
     }
+    if (end.NAME[0] == 'B') {
+        switch (end.NAME[5]) {
+        case 'R':
+            wpts.push_back(POSES::BALL_RIGHT_WAYPOINT.toTranslation());
+            break;
+        case 'M':
+            wpts.push_back(POSES::BALL_RIGHT_WAYPOINT.toTranslation());
+            break;
+        case 'L':
+            wpts.push_back(POSES::BALL_RIGHT_WAYPOINT.toTranslation());
+            break;
+        case 'H':
+            wpts.push_back(POSES::BALL_HUMAN_PLAYER_WAYPOINT.toTranslation());
+            break;
+        default:
+            break;
+        }
+    }
     auto config = frc::TrajectoryConfig(max_vel, max_accel);
     // change config variables (startVel, endVel, reversed, constraints) if necessary
     AddTrajectory(start.NAME, end.NAME, frc::TrajectoryGenerator::GenerateTrajectory(start.toPose(), wpts, end.toPose(), config));
