@@ -30,8 +30,10 @@ namespace MOTOR_CAN_ID {
 }
 
 namespace DIMENSIONS {
-    const units::length::foot_t WHEELBASE_LENGTH = 1.0_ft; // From center of back wheel to center of front wheel, in inches
-    const units::length::foot_t WHEELBASE_WIDTH = 1.0_ft; // From center of left wheel to center of right wheel, in inches
+    const units::length::inch_t WHEELBASE_LENGTH = 1.0_in; // From center of back wheel to center of front wheel, in inches
+    const units::length::inch_t WHEELBASE_WIDTH = 1.0_in; // From center of left wheel to center of right wheel, in inches
+    const units::length::inch_t CHASSIS_LENGTH = 1.0_in; // Entire chassis length, including bumpers, in inches
+    const units::length::inch_t CHASSIS_WIDTH = 1.0_in; // Entire chassis width, including bumpers, in inches
 }
 
 namespace ENCODER_CONVERSIONS {
@@ -89,85 +91,10 @@ namespace SPEEDS {
     const auto MAX_CHASSIS_TURN_ACCEL= 3.14_rad_per_s / 1_s;
 }
 
-
-// For correcting/setting odometry to certain known locations when possible
-// Examples: Auton starts, scoring locations, corners of the field other landmarks, etc
-// as a side note, it is possible to do a more dynamic calibration with vision, so adding in vision target locations is helpful as well
-// Also used for spline trajectories, as start/end locations or waypoints
-// https://firstfrc.blob.core.windows.net/frc2022/FieldAssets/2022LayoutMarkingDiagram.pdf
-namespace POSES {
-    struct field_pose {
-        double X; // across length of field, postive towards forward (to opponent's alliance station)
-        double Y; // across width of field, positive towards left
-        double ROT; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW)
-        std::string NAME;
-
-        frc::Translation2d toTranslation() const {
-            return frc::Translation2d(units::foot_t(X), units::foot_t(Y));
-        }
-        frc::Pose2d toPose() const {
-            return frc::Pose2d(this->toTranslation(), frc::Rotation2d(units::angle::radian_t(ROT)));
-        }
-        field_pose(double x, double y, double rot, std::string name) {
-            X = x;
-            Y = y;
-            ROT = rot;
-            NAME = name;
-        }
-    };
-    // (0, 0, 0) means robot is in the center of the field, facing the opponent's alliance station
-    // ^^^^^^^^^ or we change the world coordinates to whatever we want ^^^^^^^^^
-
-    const field_pose AUTON_LEFT_START {-3.0, 3.0, -1.57, "Start_L"};
-    const field_pose AUTON_MIDDLE_START {-4.0, 0, 0, "Start_M"};
-    const field_pose AUTON_RIGHT_START {-3.0, -3.0, 1.57, "Start_R"};
-
-    // For try hard auton where you just "recursively" go through balls
-    // const field_pose BALL_1{0, 0, 0, "Ball 1"}; // Far right ball
-    // const field_pose BALL_2{0, 0, 0, "Ball 2"}; // Right side ball closer to center
-    // const field_pose BALL_3{0, 0, 0, "Ball 3"}; // Human player station
-    // const field_pose BALL_4{0, 0, 0, "Ball 4"}; // Far left ball
-
-    // Set these Poses for exactly where the Ball is
-    const field_pose BALL_RIGHT{-35.5 / 12.0, -151 / 12.0, -90 * M_PI / 180.0, "Ball_R"}; // Ball on far right
-    const field_pose BALL_MIDDLE{-112 / 12.0, -82 / 12.0, 180.0, "Ball_M"}; // Ball in center-ish
-    const field_pose BALL_LEFT{-112 / 12.0, 82 / 12.0, 180.0, "Ball_L"}; // Ball on left
-    const field_pose BALL_HUMAN_PLAYER{-285 / 12.0, -129.65 / 12.0, -133.75 * M_PI / 180.0, "Ball_HP"}; // Ball by human player station
-    
-    // Ball Waypoints, one for each ball spot
-    // Used so that the robot comes at each ball from the right direction so the intake can actually pick it up
-    // should be one or two feet away from the ball, so that it can drive forward while intaking
-    const field_pose BALL_RIGHT_WAYPOINT{-30 / 12.0, -145 / 12.0, -90 * M_PI / 180.0, "WPT_Ball_R"}; // Ball on far right
-    const field_pose BALL_MIDDLE_WAYPOINT{-112 / 12.0, -82 / 12.0, 180.0, "WPT_Ball_M"}; // Ball in center-ish
-    const field_pose BALL_LEFT_WAYPOINT{-112 / 12.0, 82 / 12.0, 180.0, "WPT_Ball_L"}; // Ball on left
-    const field_pose BALL_HUMAN_PLAYER_WAYPOINT{-256 / 12.0, -112 / 12.0, -133.75 * M_PI / 180.0, "WPT_Ball_HP"}; // Ball by human player station
-
-    // these might be the same as a ball pose
-    // these should be exact where you want, face the hub but no need to come at it from a certain side
-    const field_pose SHOOTING_SPOT_LEFT{-50 / 12.0, 110 / 12.0, -30 * M_PI / 180.0, "Shoot_L"};  
-    const field_pose SHOOTING_SPOT_MIDDLE{-150 / 12.0, 0, 0, "Shoot_M"};
-    const field_pose SHOOTING_SPOT_RIGHT{-50 / 12.0, -110 / 12.0, 30 * M_PI / 180.0, "Shoot_R"};
-
-
-    const field_pose IMPORTANT_WAYPOINT_EXAMPLE{0, 0, 0, "Waypoint Example"}; // could be a start or end position, but also a useful waypoint for a trajectory where toTranslation is used
-    const field_pose CENTRAL_WAYPOINT{-200.0 / 12.0, -65.0 / 12.0, 0, "WPT_Central"}; // Good place to put as a waypoint to not hit the hangar and for good lines to other places
-}
-
 // Information needed for TrajectoryGenerator
 namespace TRAJECTORIES {
     const frc::Pose2d trajectoryTolerance{units::foot_t(0.05), units::foot_t(0.05), frc::Rotation2d(units::radian_t(0.05))};
-
-    // Full names not necessary, they are created from field_pose names
-    // const std::string LEFT_START_TO_BALL_1 = "Left Start to Ball 1";
-    // const std::string BALL_1_TO_BALL_2 = "Ball 1 to Ball 2";
-    // const std::string LEFT_START_TO_BALL_2 = "Left Start to Ball 2";
-    // const std::string BALL_2_TO_BALL_3 = "Ball 2 to Ball 3";
-    // const std::string BALL_3_TO_BALL_4 = "Ball 3 to Ball 4";
-    // const std::string BALL_4_TO_BALL_5 = "Ball 4 to Ball 5";
-    // const std::string BALL_5_TO_SHOOTING_SPOT_LEFT = "Ball 5 to Shooting Spot Left";
-    // const std::string BALL_5_TO_SHOOTING_SPOT_MIDDLE = "Ball 5 to Shooting Spot Middle";
-    // const std::string BALL_5_TO_SHOOTING_SPOT_RIGHT = "Ball 5 to Shooting Spot Right";
-
+    // All trajectories are set in PathManager constructor
 }
 
 namespace AUTON {
