@@ -27,6 +27,8 @@ namespace MOTOR_CAN_ID {
     const wheel_module LEFT_REAR{3, 4};
     const wheel_module RIGHT_FRONT{5, 6};
     const wheel_module RIGHT_REAR{7, 8};
+    const int SHOOTER = 9;
+    const int TURRET = 10;
 }
 
 namespace DIMENSIONS {
@@ -64,26 +66,31 @@ namespace PID_VALUES { // Might have to make separate values for each wheel?
         double P;
         double I;
         double D;
-        pid_config(int p, int i, int d) {
+        double F;
+        pid_config(double p, double i, double d, double f) {
             P = p;
             I = i;
             D = d;
+            F = f;
         }
     };
     // Wheels
-    const pid_config DRIVE{0, 0, 0};
-    const pid_config ANGLE{0, 0, 0};
+    const pid_config DRIVE{0, 0, 0, 0};
+    const pid_config ANGLE{0, 0, 0, 0};
 
     // Chassis (for path following)
-    const pid_config CHASSIS_X{0, 0, 0};
-    const pid_config CHASSIS_Y{0, 0, 0};
-    const pid_config CHASSIS_ROT{0, 0, 0};
+    const pid_config CHASSIS_X{0, 0, 0, 0};
+    const pid_config CHASSIS_Y{0, 0, 0, 0};
+    const pid_config CHASSIS_ROT{0, 0, 0, 0};
+
+    const pid_config SHOOTER{0.5, 0, 0, 0.4};
+    const pid_config TURRET{0, 0, 0, 0};
 }
 
 namespace SPEEDS {
     const units::velocity::feet_per_second_t MAX_FORWARD_SPEED = 1.0_fps;
     const units::velocity::feet_per_second_t MAX_STRAFE_SPEED = 1.0_fps;
-    const double MAX_TURN_SPEED = 1.0; // Doesn't work as units::radians_per_second_t for some reason
+    const units::radians_per_second_t MAX_TURN_SPEED = units::radians_per_second_t(1.0);
 
     const units::velocity::feet_per_second_t MAX_CHASSIS_SPEED = MAX_FORWARD_SPEED + MAX_STRAFE_SPEED;
     const units::acceleration::feet_per_second_squared_t MAX_CHASSIS_ACCEL = units::acceleration::feet_per_second_squared_t(1);
@@ -104,4 +111,21 @@ namespace AUTON {
     const std::vector<std::string> AUTO_LIST = {"Left-1", "Left-2", "Left-3", "Left-4", "Left-5"};
     const units::time::second_t SHOOT_TIME = 1.5_s;
     const units::time::second_t INTAKE_TIME = 1.0_s;
+}
+
+namespace TALONFX {
+    // talon sensor velocity is measured as ticks per 100ms
+    const double TICKS_PER_ROTATION = 2048;
+    const double _100MS_PER_MIN = 10 * 60;
+    const double TALON_RPM_CONVERSION = (1 / TICKS_PER_ROTATION) * _100MS_PER_MIN; // without gear ratio -> sensor velocity to motor rpm
+}
+
+namespace SHOOTER {
+    const double SHOOTING_RPM = 4000;
+    const double SHOOTER_GEAR_RATIO = 10.71;
+    const double TURRET_GEAR_RATIO = 10.71;
+    const double SHOOTER_RPM_CONVERSION = TALONFX::TALON_RPM_CONVERSION / SHOOTER_GEAR_RATIO;
+    const double TURRET_RPM_CONVERSION = TALONFX::TALON_RPM_CONVERSION / TURRET_GEAR_RATIO;
+
+    // PID constants in PID_VALUES
 }

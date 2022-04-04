@@ -47,7 +47,7 @@ void SwerveDrive::Drive(double forward, double right, double turn) {
     SetDesiredSpeeds(
         forward * SPEEDS::MAX_FORWARD_SPEED,
         -right * SPEEDS::MAX_STRAFE_SPEED,
-        units::angular_velocity::radians_per_second_t(-turn * SPEEDS::MAX_TURN_SPEED)
+        -turn * SPEEDS::MAX_TURN_SPEED
     );
 }
 
