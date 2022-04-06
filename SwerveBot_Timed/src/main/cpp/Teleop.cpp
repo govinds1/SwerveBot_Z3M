@@ -1,13 +1,15 @@
 #include "Teleop.h"
 
-Teleop::Teleop(std::shared_ptr<SwerveDrive> drive, std::shared_ptr<PathManager> pathManager) {
+Teleop::Teleop(std::shared_ptr<SwerveDrive> drive, std::shared_ptr<PathManager> pathManager, std::shared_ptr<Turret> turret) {
     m_drive = drive;
+    m_turret = turret;
     m_pathManager = pathManager;
 }
 
 void Teleop::Init() {
     m_pathManager->SetEnabled(true);
     m_drive->Init();
+    m_turret->Init();
 }
 
 void Teleop::Periodic() {
@@ -19,4 +21,5 @@ void Teleop::Periodic() {
     }
 
     m_drive->Periodic();
+    m_turret->Periodic();
 }
