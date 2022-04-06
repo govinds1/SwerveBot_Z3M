@@ -147,6 +147,8 @@ void SwerveDrive::SetFieldRelative(bool fieldRel) {
 }
 
 void SwerveDrive::SetPose(frc::Pose2d newPose) {
+    // newPose contains x, y, and rot
+    // ResetPosition requires newPose and the current gyroAngle for an offset
     m_odometry.ResetPosition(newPose, GetAngle());
 }
 
@@ -162,7 +164,7 @@ void SwerveDrive::SetPose(units::meter_t x, units::meter_t y) {
 void SwerveDrive::ResetGyro() {
     // Reset Gyro to a heading of 0 and SetPose so the new angle is updated in odometry
     m_gyro.Reset();
-    SetPose(GetPose());
+    SetPose(GetPose()); // might have to update odometry manually?
 }
 
 frc::Rotation2d SwerveDrive::GetAngle() {
