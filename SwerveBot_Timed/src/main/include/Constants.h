@@ -121,13 +121,15 @@ namespace TALONFX {
 }
 
 namespace SHOOTER {
-    const units::revolutions_per_minute_t SHOOTING_RPM = 4000_rpm;
+    const units::revolutions_per_minute_t MAX_SHOOTING_RPM = 4000_rpm;
     const units::revolutions_per_minute_t MAX_TURRET_RPM = 90_rpm;
     const double SHOOTER_GEAR_RATIO = 10.71; // ratio of motor rotations to wheel rotation
     const double TURRET_GEAR_RATIO = 10000; // ratio of motor rotations to full turret rotation (a whole 360)
-    const double SHOOTER_RPM_CONVERSION = TALONFX::TALON_RPM_CONVERSION / SHOOTER_GEAR_RATIO;
-    const double TURRET_RPM_CONVERSION = TALONFX::TALON_RPM_CONVERSION / TURRET_GEAR_RATIO;
+    const double SHOOTER_RPM_CONVERSION = TALONFX::TALON_RPM_CONVERSION / SHOOTER_GEAR_RATIO; // sensor velocity to shooter rpm
+    const double TURRET_RPM_CONVERSION = TALONFX::TALON_RPM_CONVERSION / TURRET_GEAR_RATIO; // sensor velocity to turret rpm
     const double TURRET_TICKS_TO_ROTATION_CONVERSION = 1 / (TALONFX::TICKS_PER_ROTATION * TURRET_GEAR_RATIO);
+    const double SHOOTER_RPM_TO_BALL_LINEAR_LAUNCH_VELOCITY_CONVERSION = 1.0; // find this through experimentation? Converts shooter rpm to ball speed
+    const units::velocity::feet_per_second_t SHOOTER_BALL_LINEAR_LAUNCH_VELOCITY_AT_1_FOOT{1.0}; // find through experimentation or math when you know arc, velocity along axis parallel to ground
 
     // PID constants in PID_VALUES
 }

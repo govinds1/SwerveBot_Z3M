@@ -4,7 +4,7 @@
 Turret::Turret(std::shared_ptr<SwerveDrive> drive) {
     m_drive = drive;
     SetTurretPID(PID_VALUES::TURRET.P, PID_VALUES::TURRET.I, PID_VALUES::TURRET.D, PID_VALUES::TURRET.F);
-    
+    SetShooterPID(PID_VALUES::SHOOTER.P, PID_VALUES::SHOOTER.I, PID_VALUES::SHOOTER.D, PID_VALUES::SHOOTER.F);
 }
 
 void Turret::Init() {
@@ -13,10 +13,11 @@ void Turret::Init() {
 }
 
 void Turret::Periodic() {
-    AlignToHub();
+    
 }
 
-bool Turret::AlignToHub() {
+// timeToShoot is the time until the ball will be shot
+bool Turret::ShootAtHub() {
     frc::Pose2d currentPose = m_drive->GetPose();
     double x = currentPose.X().value(); // forward
     double y = currentPose.Y().value(); // left
@@ -25,11 +26,21 @@ bool Turret::AlignToHub() {
     frc::Rotation2d limelightOffset = frc::Rotation2d(units::angle::degree_t(limelight->GetNumber("tx", 0.0)));
     frc::Rotation2d limelightSetpoint = GetAngle() + limelightOffset;
 
-    // account for current speeds
+    double distanceToGoal = std::sqrt(x * x + y * y);
+    units::velocity::feet_per_second_t vball = SHOOTER::SHOOTER_BALL_LINEAR_LAUNCH_VELOCITY_AT_1_FOOT * distanceToGoal; // linear launch velocity of the ball without accounting for chassis speed
+
+    // account for current speeds -> check notes for math
     auto currentSpeeds = m_drive->GetTrueSpeeds();
     units::velocity::feet_per_second_t vx = currentSpeeds.vx;
-    units::velocity::feet_per_second_t vy = currentSpeeds.vy;
-    units::angular_velocity::radians_per_second_t omega = currentSpeeds.omega;
+    units::velocity::feet_per_second_t vy = -currentSpeeds.vy; // negating for math reasons
+    double v = std::sqrt(std::pow(vx.value(), 2) + std::pow(vy.value(), 2)); // total chassis speed
+    double gammaAngle = (M_PI / 2.0) - std::atan2(vx.value(), vy.value()); // angle of chassis velocity off of 0
+    vball = units::velocity::feet_per_second_t(std::sqrt(std::pow(vball.value(), 2) + std::pow(v, 2) - 2*(vball.value())*(v)*std::cos(gammaAngle))); // law of cosines
+    frc::Rotation2d alpha = frc::Rotation2d(units::angle::radian_t(std::asin(std::sin(gammaAngle) * v) / vball.value())); // law of sines
+    setpoint = setpoint + alpha;
+    limelightSetpoint = limelightSetpoint + alpha;
+
+    RunShooter(vball);
 
     if (!GoToAngle(setpoint)) {
         return false;
@@ -37,17 +48,18 @@ bool Turret::AlignToHub() {
         return false;
     }
     m_turret->Set(TalonFXControlMode::Velocity, 0.0);
-    return true;
+    return (m_shooter->GetSelectedSensorVelocity() * SHOOTER::SHOOTER_RPM_CONVERSION * SHOOTER::SHOOTER_RPM_TO_BALL_LINEAR_LAUNCH_VELOCITY_CONVERSION) == vball.value();
     
 }
 
 bool Turret::GoToAngle(frc::Rotation2d angleToTurnTo) {
     // angleToTurn must be the setpoint angle with 0 facing opponent's alliance station
     // CCW is positive
-    // subtract startAngle
+    // subtract startAngle (or maybe current robot heading, if the shooter rotates with the chassis)
+    angleToTurnTo = angleToTurnTo - startAngle;
 
     // optimize angle to closest, and take into account current encoder units (current num rotations could be way more than 1)
-    angleToTurnTo = NormalizeAngle(angleToTurnTo - startAngle); // normalize given angle
+    angleToTurnTo = NormalizeAngle(angleToTurnTo); // normalize given angle
     if (AtAngle(angleToTurnTo)) return true;
 
     frc::Rotation2d currentAngle = GetAngle(); // get current angle, normalized
@@ -75,6 +87,13 @@ void Turret::SetTurretPID(double p, double i, double d, double f) {
     m_turret->Config_kF(0, f);
 }
 
+void Turret::SetShooterPID(double p, double i, double d, double f) {
+    m_shooter->Config_kP(0, p);
+    m_shooter->Config_kI(0, i);
+    m_shooter->Config_kD(0, d);
+    m_shooter->Config_kF(0, f);
+}
+
 frc::Rotation2d Turret::GetAngle() {
     return NormalizeAngle(EncoderToAngle(m_turret->GetSelectedSensorPosition()));
 }
@@ -98,4 +117,16 @@ frc::Rotation2d Turret::NormalizeAngle(frc::Rotation2d angle) {
         newDegrees -= 360.0;
     }
     return frc::Rotation2d(units::angle::degree_t(newDegrees));
+}
+
+void Turret::RunShooter(units::velocity::feet_per_second_t ballLinearLaunchVelocity) {
+    RunShooter(ballLinearLaunchVelocity / SHOOTER::SHOOTER_RPM_TO_BALL_LINEAR_LAUNCH_VELOCITY_CONVERSION);
+}
+
+void Turret::RunShooter(units::angular_velocity::revolutions_per_minute_t rpm) {
+    m_shooter->Set(TalonFXControlMode::Velocity, rpm.value() / SHOOTER::SHOOTER_RPM_CONVERSION);
+}
+
+units::angular_velocity::revolutions_per_minute_t Turret::GetRPM() {
+    return units::angular_velocity::revolutions_per_minute_t(m_shooter->GetSelectedSensorVelocity() * SHOOTER::SHOOTER_RPM_CONVERSION);
 }
