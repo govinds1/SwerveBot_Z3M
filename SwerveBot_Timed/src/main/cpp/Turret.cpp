@@ -16,27 +16,21 @@ void Turret::Periodic() {
     
 }
 
-// timeToShoot is the time until the ball will be shot
 bool Turret::ShootAtHub() {
     frc::Pose2d currentPose = m_drive->GetPose();
     double x = currentPose.X().value(); // forward
     double y = currentPose.Y().value(); // left
-    double theta = std::atan2(x, y);
-    frc::Rotation2d setpoint = frc::Rotation2d(units::angle::radian_t(270 - theta)); // 270 - theta because CCW is positive
+    frc::Rotation2d theta = units::angle::radian_t(std::atan2(x, y));
+    // theta = theta.RotateBy(fromZero);
+    frc::Rotation2d setpoint =  NormalizeAngle(FromZero(theta, y));
     frc::Rotation2d limelightOffset = frc::Rotation2d(units::angle::degree_t(limelight->GetNumber("tx", 0.0)));
     frc::Rotation2d limelightSetpoint = GetAngle() + limelightOffset;
 
     double distanceToGoal = std::sqrt(x * x + y * y);
     units::velocity::feet_per_second_t vball = SHOOTER::SHOOTER_BALL_LINEAR_LAUNCH_VELOCITY_AT_1_FOOT * distanceToGoal; // linear launch velocity of the ball without accounting for chassis speed
 
-    // account for current speeds -> check notes for math
-    auto currentSpeeds = m_drive->GetTrueSpeeds();
-    units::velocity::feet_per_second_t vx = currentSpeeds.vx;
-    units::velocity::feet_per_second_t vy = -currentSpeeds.vy; // negating for math reasons
-    double v = std::sqrt(std::pow(vx.value(), 2) + std::pow(vy.value(), 2)); // total chassis speed
-    double gammaAngle = (M_PI / 2.0) - std::atan2(vx.value(), vy.value()); // angle of chassis velocity off of 0
-    vball = units::velocity::feet_per_second_t(std::sqrt(std::pow(vball.value(), 2) + std::pow(v, 2) - 2*(vball.value())*(v)*std::cos(gammaAngle))); // law of cosines
-    frc::Rotation2d alpha = frc::Rotation2d(units::angle::radian_t(std::asin(std::sin(gammaAngle) * v) / vball.value())); // law of sines
+    // frc::Rotation2d alpha = SpeedOffset(vball);
+    frc::Rotation2d alpha = SpeedOffset(vball, setpoint);
     setpoint = setpoint + alpha;
     limelightSetpoint = limelightSetpoint + alpha;
 
@@ -77,6 +71,59 @@ void Turret::TurnAngle(frc::Rotation2d deltaAngle) {
 bool Turret::AtAngle(frc::Rotation2d setpoint) {
     frc::Rotation2d error = GetAngle() - NormalizeAngle(setpoint);
     return (std::abs(error.Degrees().value()) < 0.5);
+}
+
+// doing some other crazy stuff
+// don't use this function
+frc::Rotation2d Turret::SpeedOffset(units::velocity::feet_per_second_t &vball) {
+    // account for current speeds -> check notes for math
+    auto currentSpeeds = m_drive->GetTrueSpeeds();
+    units::velocity::feet_per_second_t vx = currentSpeeds.vx;
+    units::velocity::feet_per_second_t vy = -currentSpeeds.vy; // negating for math reasons (idk?)
+    double v = std::sqrt(std::pow(vx.value(), 2) + std::pow(vy.value(), 2)); // total chassis speed
+    double gammaAngle = std::atan2(vy.value(), vx.value()); // angle of chassis velocity off of 0
+    if (vx.value() > 0) {
+        gammaAngle = M_PI - gammaAngle; // to make sure the angle is off of 0
+    }
+    auto vball = units::velocity::feet_per_second_t(std::sqrt(std::pow(vball.value(), 2) + std::pow(v, 2) - 2*(vball.value())*(v)*std::cos(gammaAngle))); // law of cosines
+    return frc::Rotation2d(units::angle::radian_t(std::asin(std::sin(gammaAngle) * v) / vball.value())); // law of sines
+}
+
+// vball is given as the launch speed of the ball without accounting for chassis speeds
+// theta is the turret angle towards the hub off 0 (CCW is positive)
+    // Subtract chassis speed vector from vballNoOffset vector
+frc::Rotation2d Turret::SpeedOffset(units::velocity::feet_per_second_t &vball, frc::Rotation2d theta) {
+
+    // Get components of vballNoOffset
+    // This is where the coordinate system being what it is actually helps :)
+    units::velocity::feet_per_second_t vballX = theta.Cos() * vball;
+    units::velocity::feet_per_second_t vballY = theta.Sin() * vball;
+
+    // Get components of vchassis
+    auto currentSpeeds = m_drive->GetTrueSpeeds();
+    units::velocity::feet_per_second_t vx = currentSpeeds.vx;
+    units::velocity::feet_per_second_t vy = currentSpeeds.vy;
+
+    // Subtract components
+    units::velocity::feet_per_second_t newVBallX = vballX - vx;
+    units::velocity::feet_per_second_t newVBallY = vballY - vy;
+
+    // Get full magnitude and find angle for turret
+    vball = units::velocity::feet_per_second_t(std::sqrt(std::pow(newVBallX.value(), 2) + std::pow(newVBallY.value(), 2)));
+    auto vballTheta = units::angle::radian_t(std::atan2(newVBallX.value(), newVBallY.value()));
+    return FromZero(vballTheta, -newVBallY.value()); // negate since it's going towards hub, rather from hub
+}
+
+// y_val must be FROM hub
+frc::Rotation2d Turret::FromZero(frc::Rotation2d theta, double y_val) {
+    frc::Rotation2d fromZero;
+    if (y_val > 0) {
+        fromZero = frc::Rotation2d(units::angle::degree_t(270));
+    } else {
+        fromZero = frc::Rotation2d(units::angle::degree_t(90));
+    }
+    theta = -theta; // so that it is fromZero - theta
+    return theta.RotateBy(fromZero);
 }
 
 

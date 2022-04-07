@@ -25,6 +25,9 @@ class Turret {
     bool GoToAngle(frc::Rotation2d angle);
     void TurnAngle(frc::Rotation2d deltaAngle);
     bool AtAngle(frc::Rotation2d setpointAngle);
+    frc::Rotation2d SpeedOffset(units::velocity::feet_per_second_t &vball);
+    frc::Rotation2d SpeedOffset(units::velocity::feet_per_second_t &vball, frc::Rotation2d theta);
+    frc::Rotation2d FromZero(frc::Rotation2d theta, double y_val);
     void SetTurretPID(double p = 0.0, double i = 0.0, double d = 0.0, double f = 0.0);
     void SetShooterPID(double p = 0.0, double i = 0.0, double d = 0.0, double f = 0.0);
     frc::Rotation2d GetAngle();
