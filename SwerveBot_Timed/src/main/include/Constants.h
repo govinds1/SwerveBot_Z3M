@@ -109,7 +109,7 @@ namespace AUTON {
     // X = starting position -> {Left, Middle, Right}
     // Y = # of balls -> {1, 2, 3, 4, 5, ?}
     const std::vector<std::string> AUTO_LIST = {"Left-1", "Left-2", "Left-3", "Left-4", "Left-5"};
-    const units::time::second_t SHOOT_TIME = 1.5_s;
+    const units::time::second_t SHOOT_TIME = 0.5_s;
     const units::time::second_t INTAKE_TIME = 1.0_s;
 }
 

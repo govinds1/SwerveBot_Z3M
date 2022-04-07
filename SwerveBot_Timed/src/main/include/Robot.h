@@ -31,5 +31,5 @@ class Robot : public frc::TimedRobot {
   std::shared_ptr<SwerveDrive> m_drive = std::make_shared<SwerveDrive>(m_pathManager);
   std::shared_ptr<Turret> m_turret = std::make_shared<Turret>(m_drive);
   std::shared_ptr<Teleop> m_teleop = std::make_shared<Teleop>(m_drive, m_pathManager, m_turret);
-  std::shared_ptr<Auton> m_auton = std::make_shared<Auton>(m_drive, m_pathManager);
+  std::shared_ptr<Auton> m_auton = std::make_shared<Auton>(m_drive, m_pathManager, m_turret);
 };

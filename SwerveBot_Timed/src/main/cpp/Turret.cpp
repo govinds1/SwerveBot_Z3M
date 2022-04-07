@@ -89,7 +89,7 @@ frc::Rotation2d Turret::SpeedOffset(units::velocity::feet_per_second_t &vball) {
     return frc::Rotation2d(units::angle::radian_t(std::asin(std::sin(gammaAngle) * v) / vball.value())); // law of sines
 }
 
-// vball is given as the launch speed of the ball without accounting for chassis speeds
+// vball is given as the launch speed of the ball without accounting for chassis speeds, directly towards the hub
 // theta is the turret angle towards the hub off 0 (CCW is positive)
     // Subtract chassis speed vector from vballNoOffset vector
 frc::Rotation2d Turret::SpeedOffset(units::velocity::feet_per_second_t &vball, frc::Rotation2d theta) {
@@ -111,7 +111,7 @@ frc::Rotation2d Turret::SpeedOffset(units::velocity::feet_per_second_t &vball, f
     // Get full magnitude and find angle for turret
     vball = units::velocity::feet_per_second_t(std::sqrt(std::pow(newVBallX.value(), 2) + std::pow(newVBallY.value(), 2)));
     auto vballTheta = units::angle::radian_t(std::atan2(newVBallX.value(), newVBallY.value()));
-    return FromZero(vballTheta, -newVBallY.value()); // negate since it's going towards hub, rather from hub
+    return FromZero(vballTheta, -newVBallY.value()); // negate since it's going towards hub, rather than from hub
 }
 
 // y_val must be FROM hub
