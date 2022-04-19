@@ -12,6 +12,9 @@ package frc.robot;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
+
+ // RobotMap will contain all ports/channels/IDs and controller bindings
+ // All other values will be in Calibrations
 public final class RobotMap {
     // Controller
     public static final int DRIVE_CONTROLLER_CHANNEL = 0;
@@ -28,7 +31,4 @@ public final class RobotMap {
     public static final int[] RIGHT_FRONT_ENCODER_IDS = {4, 5};
     public static final int[] RIGHT_REAR_ENCODER_IDS = {6, 7};
 
-    // Encoder Conversion
-    public static final double DRIVE_ENCODER_FEET_PER_TICK = 1; // 1 / (gearRatio * wheelCircumference * 12)
-    public static final double ANGLE_ENCODER_RADIAN_PER_PULSE = 1; // 1 / (pulse_per_motor_rot * gearRatio * 2 * PI)
 }

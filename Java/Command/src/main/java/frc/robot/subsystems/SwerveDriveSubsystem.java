@@ -5,13 +5,14 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Calibrations;
 import frc.robot.RobotMap;
 
 public class SwerveDriveSubsystem extends SubsystemBase {
-  WheelModuleSubsystem leftFront = new WheelModuleSubsystem(RobotMap.LEFT_FRONT_IDS, RobotMap.LEFT_FRONT_ENCODER_IDS);
-  WheelModuleSubsystem leftRear = new WheelModuleSubsystem(RobotMap.LEFT_REAR_IDS, RobotMap.LEFT_REAR_ENCODER_IDS);
-  WheelModuleSubsystem rightFront = new WheelModuleSubsystem(RobotMap.RIGHT_FRONT_IDS, RobotMap.RIGHT_FRONT_ENCODER_IDS);
-  WheelModuleSubsystem rightRear = new WheelModuleSubsystem(RobotMap.RIGHT_REAR_IDS, RobotMap.RIGHT_REAR_ENCODER_IDS);
+  WheelModuleSubsystem leftFront = new WheelModuleSubsystem(RobotMap.LEFT_FRONT_IDS, RobotMap.LEFT_FRONT_ENCODER_IDS, Calibrations.LEFT_FRONT_ZERO);
+  WheelModuleSubsystem leftRear = new WheelModuleSubsystem(RobotMap.LEFT_REAR_IDS, RobotMap.LEFT_REAR_ENCODER_IDS, Calibrations.LEFT_REAR_ZERO);
+  WheelModuleSubsystem rightFront = new WheelModuleSubsystem(RobotMap.RIGHT_FRONT_IDS, RobotMap.RIGHT_FRONT_ENCODER_IDS, Calibrations.RIGHT_FRONT_ZERO);
+  WheelModuleSubsystem rightRear = new WheelModuleSubsystem(RobotMap.RIGHT_REAR_IDS, RobotMap.RIGHT_REAR_ENCODER_IDS, Calibrations.RIGHT_REAR_ZERO);
 
   /** Creates a new ExampleSubsystem. */
   public SwerveDriveSubsystem() {}
