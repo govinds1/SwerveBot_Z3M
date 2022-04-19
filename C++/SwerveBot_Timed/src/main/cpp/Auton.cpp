@@ -1,9 +1,10 @@
 #include "Auton.h"
 
 
-Auton::Auton(std::shared_ptr<SwerveDrive> swerveDrive, std::shared_ptr<PathManager> pathManager) {
+Auton::Auton(std::shared_ptr<SwerveDrive> swerveDrive, std::shared_ptr<PathManager> pathManager, std::shared_ptr<Turret> turret) {
     m_swerveDrive = swerveDrive;
     m_pathManager = pathManager;
+    m_turret = turret;
     frc::SmartDashboard::PutStringArray("Auto List", AUTON::AUTO_LIST);
     m_stateStartTime = 0_s;
 }
@@ -230,6 +231,7 @@ void Auton::GoToPose(const std::string &poseName, bool shoot, bool intake) {
     if (percentProgress >= 0.85) {
         if (shoot) {
             // run up shooter
+            m_turret->ShootAtHub();
         }
         if (intake) {
             // run intake
@@ -255,6 +257,7 @@ void Auton::WaitForMechanism(bool shoot, bool intake) {
     } else {
         if (shoot) {
             // keep shooter running
+            m_turret->ShootAtHub();
             // run conveyor
         }
         if (intake) {

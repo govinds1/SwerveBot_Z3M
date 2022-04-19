@@ -85,6 +85,7 @@
     "cansparkmax.h": "c",
     "swervedriveodometry.h": "c",
     "curvature.h": "c",
-    "smartdashboard.h": "c"
+    "smartdashboard.h": "c",
+    "swervedrive.h": "c"
   }
 }

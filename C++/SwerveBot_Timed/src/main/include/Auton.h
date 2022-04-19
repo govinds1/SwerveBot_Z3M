@@ -4,6 +4,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include "SwerveDrive.h"
 #include "PathManager.h"
+#include "Turret.h"
 
 class Auton {
     enum StartPosition {
@@ -13,6 +14,7 @@ class Auton {
     units::time::second_t m_stateStartTime = 0_s;
     std::shared_ptr<SwerveDrive> m_swerveDrive;
     std::shared_ptr<PathManager> m_pathManager;
+    std::shared_ptr<Turret> m_turret;
     frc::Pose2d m_startPose;
     int m_ballsDesired;
     int m_ballsShot;
@@ -24,7 +26,7 @@ class Auton {
     int m_autoState = 0;
 
     public:
-    Auton(std::shared_ptr<SwerveDrive> swerveDrive, std::shared_ptr<PathManager> pathManager);
+    Auton(std::shared_ptr<SwerveDrive> swerveDrive, std::shared_ptr<PathManager> pathManager, std::shared_ptr<Turret> turret);
     void Init();
     void Periodic();
     void LeftStartAuto();
