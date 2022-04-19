@@ -102,8 +102,8 @@ public class WheelModuleSubsystem extends SubsystemBase {
 
     // Set the real state of the swerve module -> for odometry purposes
     public void SetTrueState() {
-        m_trueState.speedMetersPerSecond = GetSpeed();
-        
+        m_trueState.speedMetersPerSecond = Units.feetToMeters(GetSpeed());
+        m_trueState.angle = GetAngle();
     }
 
     // Wheel angle of 0 (from a getter function) is considered to be facing forwards

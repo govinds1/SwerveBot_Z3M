@@ -33,4 +33,8 @@ public final class Calibrations {
     public static final double MAX_CHASSIS_ACCEL = 1.0; // feet per sec^2
     public static final double MAX_CHASSIS_TURN_SPEED = 6.28; // rads per sec
     public static final double MAX_CHASSIS_TURN_ACCEL= 3.14; // rads per sec^2
+
+
+    // Controller
+    public static final double JOYSTICK_DEADZONE = 0.05;
 }
