@@ -21,12 +21,13 @@ public class RobotContainer {
   private final SwerveDriveSubsystem m_swerveDrive = new SwerveDriveSubsystem();
   private final XboxController m_driveController = new XboxController(RobotMap.DRIVE_CONTROLLER_CHANNEL);
 
-  private final DriveControlCommand m_autoCommand = new DriveControlCommand(m_swerveDrive, m_driveController);
+  private final DriveControlCommand m_driveControlCommand = new DriveControlCommand(m_swerveDrive, m_driveController);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
+    m_swerveDrive.setDefaultCommand(m_driveControlCommand);
   }
 
   /**
@@ -44,6 +45,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return m_autoCommand;
+    return null;
   }
 }
