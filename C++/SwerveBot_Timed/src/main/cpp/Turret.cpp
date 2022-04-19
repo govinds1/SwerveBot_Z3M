@@ -85,7 +85,7 @@ frc::Rotation2d Turret::SpeedOffset(units::velocity::feet_per_second_t &vball) {
     if (vx.value() > 0) {
         gammaAngle = M_PI - gammaAngle; // to make sure the angle is off of 0
     }
-    auto vball = units::velocity::feet_per_second_t(std::sqrt(std::pow(vball.value(), 2) + std::pow(v, 2) - 2*(vball.value())*(v)*std::cos(gammaAngle))); // law of cosines
+    vball = units::velocity::feet_per_second_t(std::sqrt(std::pow(vball.value(), 2) + std::pow(v, 2) - 2*(vball.value())*(v)*std::cos(gammaAngle))); // law of cosines
     return frc::Rotation2d(units::angle::radian_t(std::asin(std::sin(gammaAngle) * v) / vball.value())); // law of sines
 }
 

@@ -27,4 +27,8 @@ public final class RobotMap {
     public static final int[] LEFT_REAR_ENCODER_IDS = {2, 3};
     public static final int[] RIGHT_FRONT_ENCODER_IDS = {4, 5};
     public static final int[] RIGHT_REAR_ENCODER_IDS = {6, 7};
+
+    // Encoder Conversion
+    public static final double DRIVE_ENCODER_FEET_PER_TICK = 1; // 1 / (gearRatio * wheelCircumference * 12)
+    public static final double ANGLE_ENCODER_RADIAN_PER_PULSE = 1; // 1 / (pulse_per_motor_rot * gearRatio * 2 * PI)
 }
