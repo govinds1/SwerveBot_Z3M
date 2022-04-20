@@ -8,6 +8,13 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DriveControlCommand;
+import frc.robot.commands.autonomous.DriveCircleCommand;
+import frc.robot.commands.autonomous.left_start.LeftFiveBallAuton;
+import frc.robot.commands.autonomous.left_start.LeftFourBallAuton;
+import frc.robot.commands.autonomous.left_start.LeftOneBallAuton;
+import frc.robot.commands.autonomous.left_start.LeftSixBallAuton;
+import frc.robot.commands.autonomous.left_start.LeftThreeBallAuton;
+import frc.robot.commands.autonomous.left_start.LeftTwoBallAuton;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -27,7 +34,7 @@ public class RobotContainer {
   // Naming convention (no spaces): X-Y
   // X = starting position -> {Left, Middle, Right}
   // Y = # of balls -> {1, 2, 3, 4, 5, ?}
-  private final String[] m_autoList = {"Left-1", "Left-2", "Left-3", "Left-4", "Left-5"};
+  private final String[] m_autoList = {"Circle", "Left-1", "Left-2", "Left-3", "Left-4", "Left-5", "Left-6"};
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -53,6 +60,23 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    return null;
+    Command autoCommand = new DriveCircleCommand(m_swerveDrive);
+    String selected = SmartDashboard.getString("Auto Selector", "Circle");
+
+    if (selected.equals(m_autoList[1])) {
+      autoCommand = new LeftOneBallAuton(m_swerveDrive);
+    } else if (selected.equals(m_autoList[2])) {
+      autoCommand = new LeftTwoBallAuton(m_swerveDrive);
+    } else if (selected.equals(m_autoList[3])) {
+      autoCommand = new LeftThreeBallAuton(m_swerveDrive);
+    } else if (selected.equals(m_autoList[4])) {
+      autoCommand = new LeftFourBallAuton(m_swerveDrive);
+    } else if (selected.equals(m_autoList[5])) {
+      autoCommand = new LeftFiveBallAuton(m_swerveDrive);
+    } else if (selected.equals(m_autoList[6])) {
+      autoCommand = new LeftSixBallAuton(m_swerveDrive);
+    } 
+
+    return autoCommand;
   }
 }
