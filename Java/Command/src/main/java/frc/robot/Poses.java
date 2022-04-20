@@ -12,24 +12,28 @@ public class Poses {
 // Important for auton
 // https://firstfrc.blob.core.windows.net/frc2022/FieldAssets/2022LayoutMarkingDiagram.pdf
     public static class field_pose {
-        double XFeet; // across length of field, postive towards forward (to opponent's alliance station), feet
-        double YFeet; // across width of field, positive towards left, feet
-        double ROTDegrees; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW), degrees
-        String NAME;
+        public double XFeet; // across length of field, postive towards forward (to opponent's alliance station), feet
+        public double YFeet; // across width of field, positive towards left, feet
+        public double ROTDegrees; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW), degrees
+        public String NAME;
 
-        Translation2d toTranslationFeet() {
+        public Translation2d toTranslationFeet() {
             return new Translation2d(XFeet, YFeet);
         }
-        Translation2d toTranslationMeters() {
+
+        public Translation2d toTranslationMeters() {
             return Utils.TranslationFeetToMeters(toTranslationFeet());
         }
-        Pose2d toPoseFeet() {
+
+        public Pose2d toPoseFeet() {
             return new Pose2d(toTranslationFeet(), Rotation2d.fromDegrees(ROTDegrees));
         }
-        Pose2d toPoseMeters() {
+
+        public Pose2d toPoseMeters() {
             return Utils.PoseFeetToMeters(toPoseFeet());
         }
-        field_pose(double x, double y, double rot, String name) {
+
+        public field_pose(double x, double y, double rot, String name) {
             XFeet = x;
             YFeet = y;
             ROTDegrees = rot;

@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.DriveControlCommand;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,11 +24,18 @@ public class RobotContainer {
 
   private final DriveControlCommand m_driveControlCommand = new DriveControlCommand(m_swerveDrive, m_driveController);
 
+  // Naming convention (no spaces): X-Y
+  // X = starting position -> {Left, Middle, Right}
+  // Y = # of balls -> {1, 2, 3, 4, 5, ?}
+  private final String[] m_autoList = {"Left-1", "Left-2", "Left-3", "Left-4", "Left-5"};
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
     m_swerveDrive.setDefaultCommand(m_driveControlCommand);
+
+    SmartDashboard.putStringArray("Auto List", m_autoList);
   }
 
   /**

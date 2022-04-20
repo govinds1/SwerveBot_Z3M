@@ -19,7 +19,14 @@ import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.util.Units;
 
 public class PathManager {
-    private HashMap<String, Trajectory> trajectories;
+    private static HashMap<String, Trajectory> trajectories;
+    private static PIDController xController = new PIDController(Calibrations.CHASSIS_X[0], Calibrations.CHASSIS_X[1], Calibrations.CHASSIS_X[2]); // adds control for forward-backward error
+    private static PIDController yController = new PIDController(Calibrations.CHASSIS_Y[0], Calibrations.CHASSIS_Y[1], Calibrations.CHASSIS_Y[2]); // adds control for left-right error
+    private static ProfiledPIDController thetaController = new ProfiledPIDController( // adds control for azimuth error
+        Calibrations.CHASSIS_ROT[0], Calibrations.CHASSIS_ROT[1], Calibrations.CHASSIS_ROT[2],
+        new TrapezoidProfile.Constraints(Calibrations.MAX_CHASSIS_TURN_SPEED, Calibrations.MAX_CHASSIS_TURN_ACCEL)
+    );
+    private static HolonomicDriveController swerveDriveController = new HolonomicDriveController(xController, yController, thetaController);
 
     public PathManager() {
         // Add Trajectories here
@@ -86,21 +93,21 @@ public class PathManager {
         swerveDriveController.setTolerance(Poses.trajectoryTolerance);
     }
 
-    String ConcatPoseNames(String pose1, String pose2) {
+    public static String ConcatPoseNames(String pose1, String pose2) {
         return pose1 + " to " + pose2;
     }
 
-    void AddTrajectory(String name, Trajectory trajectory) {
+    public static void AddTrajectory(String name, Trajectory trajectory) {
         trajectories.put(name, trajectory);
     }
 
-    void AddTrajectory(String startPoseName, String endPoseName, Trajectory trajectory) {
+    public static void AddTrajectory(String startPoseName, String endPoseName, Trajectory trajectory) {
         AddTrajectory(ConcatPoseNames(startPoseName, endPoseName), trajectory);
     }
 
     // All field_poses in Poses class are in feet, must be converted to meters!!
     // same with TrajectoryConfig constraints
-    void GenTrajectory(Poses.field_pose start, Poses.field_pose end, Poses.field_pose[] waypoints, double max_vel, double max_accel) {
+    public static void GenTrajectory(Poses.field_pose start, Poses.field_pose end, Poses.field_pose[] waypoints, double max_vel, double max_accel) {
         List<Translation2d> wpts = new ArrayList<Translation2d>();
         for (Poses.field_pose wpt : waypoints) {
             wpts.add(wpt.toTranslationMeters());
@@ -124,42 +131,33 @@ public class PathManager {
         AddTrajectory(start.NAME, end.NAME, TrajectoryGenerator.generateTrajectory(start.toPoseMeters(), wpts, end.toPoseMeters(), config));
     }
 
-    void GenTrajectory(Poses.field_pose start, Poses.field_pose end, Poses.field_pose[] waypoints) {
+    public static void GenTrajectory(Poses.field_pose start, Poses.field_pose end, Poses.field_pose[] waypoints) {
         GenTrajectory(start, end, waypoints, Calibrations.MAX_CHASSIS_SPEED, Calibrations.MAX_CHASSIS_ACCEL);
     }
 
-    void GenTrajectory(Poses.field_pose start, Poses.field_pose end) {
+    public static void GenTrajectory(Poses.field_pose start, Poses.field_pose end) {
         Poses.field_pose[] empty = {};
         GenTrajectory(start, end, empty, Calibrations.MAX_CHASSIS_SPEED, Calibrations.MAX_CHASSIS_ACCEL);
     }
 
-
-    PIDController xController = new PIDController(Calibrations.CHASSIS_X[0], Calibrations.CHASSIS_X[1], Calibrations.CHASSIS_X[2]); // adds control for forward-backward error
-    PIDController yController = new PIDController(Calibrations.CHASSIS_Y[0], Calibrations.CHASSIS_Y[1], Calibrations.CHASSIS_Y[2]); // adds control for left-right error
-    ProfiledPIDController thetaController = new ProfiledPIDController( // adds control for azimuth error
-        Calibrations.CHASSIS_ROT[0], Calibrations.CHASSIS_ROT[1], Calibrations.CHASSIS_ROT[2],
-        new TrapezoidProfile.Constraints(Calibrations.MAX_CHASSIS_TURN_SPEED, Calibrations.MAX_CHASSIS_TURN_ACCEL)
-    );
-    HolonomicDriveController swerveDriveController = new HolonomicDriveController(xController, yController, thetaController);
-
-    ChassisSpeeds CalculateSpeeds(double currentTime, String trajectoryName, Pose2d currentPose, Rotation2d currentHeading) {
+    public static ChassisSpeeds CalculateSpeeds(double currentTime, String trajectoryName, Pose2d currentPose, Rotation2d currentHeading) {
         State desiredState = trajectories.get(trajectoryName).sample(currentTime);
         return swerveDriveController.calculate(currentPose, desiredState, currentHeading);
     }
 
-    ChassisSpeeds CalculateSpeeds(double currentTime, String startPoseName, String endPoseName, Pose2d currentPose, Rotation2d currentHeading) {
+    public static ChassisSpeeds CalculateSpeeds(double currentTime, String startPoseName, String endPoseName, Pose2d currentPose, Rotation2d currentHeading) {
         return CalculateSpeeds(currentTime, ConcatPoseNames(startPoseName, endPoseName), currentPose, currentHeading);
     }
 
-    double TrajectoryStatus(double currentTime, String trajectoryName) {
+    public static double TrajectoryStatus(double currentTime, String trajectoryName) {
         return (currentTime / trajectories.get(trajectoryName).getTotalTimeSeconds());
     }
 
-    boolean AtTarget() {
+    public static boolean AtTarget() {
         return swerveDriveController.atReference();
     }
 
-    void SetEnabled(boolean enabled) {
+    public static void SetEnabled(boolean enabled) {
         swerveDriveController.setEnabled(enabled);
     }
 }

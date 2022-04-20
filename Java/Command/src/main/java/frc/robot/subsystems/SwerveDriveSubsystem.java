@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Calibrations;
+import frc.robot.PathManager;
 import frc.robot.RobotMap;
 import frc.robot.Utils;
 
@@ -103,6 +104,14 @@ public class SwerveDriveSubsystem extends SubsystemBase {
     SetFieldRelative(driveFieldRelative);
     Drive(forward, right, turn);
     SetFieldRelative(fieldRelSaved);
+  }
+
+  public void FollowTrajectory(double currentTime, String trajectoryName) {
+    SetDesiredSpeeds(PathManager.CalculateSpeeds(currentTime, trajectoryName, m_odometry.getPoseMeters(), GetAngle()));
+  }
+
+  public void FollowTrajectory(double currentTime, String startPoseName, String endPoseName) {
+    FollowTrajectory(currentTime, PathManager.ConcatPoseNames(startPoseName, endPoseName));
   }
 
   public void ResetSpeeds() {
