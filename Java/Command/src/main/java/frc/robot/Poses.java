@@ -12,21 +12,27 @@ public class Poses {
 // Important for auton
 // https://firstfrc.blob.core.windows.net/frc2022/FieldAssets/2022LayoutMarkingDiagram.pdf
     public static class field_pose {
-        double X; // across length of field, postive towards forward (to opponent's alliance station), feet
-        double Y; // across width of field, positive towards left, feet
-        double ROT; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW), degrees
+        double XFeet; // across length of field, postive towards forward (to opponent's alliance station), feet
+        double YFeet; // across width of field, positive towards left, feet
+        double ROTDegrees; // where 0 is facing the opponent's alliance station, positive towards turning left (CCW), degrees
         String NAME;
 
-        Translation2d toTranslation() {
-            return new Translation2d(X, Y);
+        Translation2d toTranslationFeet() {
+            return new Translation2d(XFeet, YFeet);
         }
-        Pose2d toPose() {
-            return new Pose2d(toTranslation(), Rotation2d.fromDegrees(ROT));
+        Translation2d toTranslationMeters() {
+            return Utils.TranslationFeetToMeters(toTranslationFeet());
+        }
+        Pose2d toPoseFeet() {
+            return new Pose2d(toTranslationFeet(), Rotation2d.fromDegrees(ROTDegrees));
+        }
+        Pose2d toPoseMeters() {
+            return Utils.PoseFeetToMeters(toPoseFeet());
         }
         field_pose(double x, double y, double rot, String name) {
-            X = x;
-            Y = y;
-            ROT = rot;
+            XFeet = x;
+            YFeet = y;
+            ROTDegrees = rot;
             NAME = name;
         }
     };
@@ -88,27 +94,27 @@ public class Poses {
     // Used so that the robot comes at each ball from the right direction so the intake can actually pick it up
     // should be one or two feet away from the ball, so that it can drive forward while intaking
     public static final field_pose BALL_RIGHT_WAYPOINT = new field_pose( // Ball on far right
-        BALL_RIGHT.X,
-        BALL_RIGHT.Y + (Calibrations.CHASSIS_LENGTH * 2 / 12.0),
-        BALL_RIGHT.ROT,
+        BALL_RIGHT.XFeet,
+        BALL_RIGHT.YFeet + (Calibrations.CHASSIS_LENGTH * 2 / 12.0),
+        BALL_RIGHT.ROTDegrees,
         "WPT_Ball_R"
     );
     public static final field_pose BALL_MIDDLE_WAYPOINT = new field_pose( // Ball in center-ish
-        BALL_MIDDLE.X + (Calibrations.CHASSIS_LENGTH * 2 / 12.0),
-        BALL_MIDDLE.Y,
-        BALL_MIDDLE.ROT,
+        BALL_MIDDLE.XFeet + (Calibrations.CHASSIS_LENGTH * 2 / 12.0),
+        BALL_MIDDLE.YFeet,
+        BALL_MIDDLE.ROTDegrees,
         "WPT_Ball_M"
     );
     public static final field_pose BALL_LEFT_WAYPOINT = new field_pose( // Ball on left
-        BALL_LEFT.X + (Calibrations.CHASSIS_LENGTH * 2 / 12.0),
-        BALL_LEFT.Y,
-        BALL_LEFT.ROT,
+        BALL_LEFT.XFeet + (Calibrations.CHASSIS_LENGTH * 2 / 12.0),
+        BALL_LEFT.YFeet,
+        BALL_LEFT.ROTDegrees,
         "WPT_Ball_L"
     );
     public static final field_pose BALL_HUMAN_PLAYER_WAYPOINT = new field_pose( // Ball by human player station
-        BALL_HUMAN_PLAYER.X + (Calibrations.CHASSIS_LENGTH * 2 / 12.0), // not exact
-        BALL_HUMAN_PLAYER.Y + (Calibrations.CHASSIS_WIDTH * 2 / 12.0), // not exact
-        BALL_HUMAN_PLAYER.ROT,
+        BALL_HUMAN_PLAYER.XFeet + (Calibrations.CHASSIS_LENGTH * 2 / 12.0), // not exact
+        BALL_HUMAN_PLAYER.YFeet + (Calibrations.CHASSIS_WIDTH * 2 / 12.0), // not exact
+        BALL_HUMAN_PLAYER.ROTDegrees,
         "WPT_Ball_HP"
     );
 
@@ -154,4 +160,7 @@ public class Poses {
         0,
         "WPT_Central"
     );
+
+
+    public static final Pose2d trajectoryTolerance = new Pose2d(0.05, 0.05, new Rotation2d(0.05));
 }

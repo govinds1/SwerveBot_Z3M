@@ -14,6 +14,14 @@ public class Utils {
         return new Pose2d(TranslationMetersToFeet(poseMeters.getTranslation()), poseMeters.getRotation());
     }
 
+    public static Translation2d TranslationFeetToMeters(Translation2d translationFeet) {
+        return new Translation2d(Units.feetToMeters(translationFeet.getX()), Units.feetToMeters(translationFeet.getY()));
+    }
+
+    public static Pose2d PoseFeetToMeters(Pose2d poseFeet) {
+        return new Pose2d(TranslationFeetToMeters(poseFeet.getTranslation()), poseFeet.getRotation());
+    }
+
     public static double Deadband(double value, double deadzone) {
         if (Math.abs(value) < deadzone) {
             return 0;

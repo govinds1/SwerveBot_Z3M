@@ -5,6 +5,9 @@ public final class Calibrations {
     // PID values
     public static final double[] DRIVE_PID_VALUES = {0.0, 0.0, 0.0};
     public static final double[] ANGLE_PID_VALUES = {0.0, 0.0, 0.0};
+    public static final double[] CHASSIS_X = {0.0, 0.0, 0.0};
+    public static final double[] CHASSIS_Y = {0.0, 0.0, 0.0};
+    public static final double[] CHASSIS_ROT = {0.0, 0.0, 0.0};
 
     // Wheel angle zeros
     public static int LEFT_FRONT_ZERO = 0;
