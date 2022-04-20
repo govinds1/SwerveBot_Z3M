@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,6 +18,12 @@ import frc.robot.commands.autonomous.left_start.LeftOneBallAuton;
 import frc.robot.commands.autonomous.left_start.LeftSixBallAuton;
 import frc.robot.commands.autonomous.left_start.LeftThreeBallAuton;
 import frc.robot.commands.autonomous.left_start.LeftTwoBallAuton;
+import frc.robot.commands.autonomous.right_start.RightFiveBallAuton;
+import frc.robot.commands.autonomous.right_start.RightFourBallAuton;
+import frc.robot.commands.autonomous.right_start.RightOneBallAuton;
+import frc.robot.commands.autonomous.right_start.RightSixBallAuton;
+import frc.robot.commands.autonomous.right_start.RightThreeBallAuton;
+import frc.robot.commands.autonomous.right_start.RightTwoBallAuton;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
@@ -34,14 +43,20 @@ public class RobotContainer {
   // Naming convention (no spaces): X-Y
   // X = starting position -> {Left, Middle, Right}
   // Y = # of balls -> {1, 2, 3, 4, 5, ?}
-  private final String[] m_autoList = {"Circle", "Left-1", "Left-2", "Left-3", "Left-4", "Left-5", "Left-6"};
+  private final String[] m_autoList = new String[19]; // common robot crash bug -> array overflow because this size isn't updated
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
     configureButtonBindings();
     m_swerveDrive.setDefaultCommand(m_driveControlCommand);
-
+    m_autoList[0] = "Circle";
+    for (int i = 1; (i+2) < m_autoList.length; i = i+3) {
+      m_autoList[i] = "Left-"+ i+1;
+      m_autoList[i+1] = "Middle-"+ i+1;
+      m_autoList[i+2] = "Right-"+ i+1;
+    }
+    // Or use a custom dashboard widget -> select start and then select # of balls
     SmartDashboard.putStringArray("Auto List", m_autoList);
   }
 
@@ -60,22 +75,83 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An ExampleCommand will run in autonomous
-    Command autoCommand = new DriveCircleCommand(m_swerveDrive);
+    Command defaultCommand = new DriveCircleCommand(m_swerveDrive);
+    Command autoCommand = defaultCommand;
     String selected = SmartDashboard.getString("Auto Selector", "Circle");
-
-    if (selected.equals(m_autoList[1])) {
-      autoCommand = new LeftOneBallAuton(m_swerveDrive);
-    } else if (selected.equals(m_autoList[2])) {
-      autoCommand = new LeftTwoBallAuton(m_swerveDrive);
-    } else if (selected.equals(m_autoList[3])) {
-      autoCommand = new LeftThreeBallAuton(m_swerveDrive);
-    } else if (selected.equals(m_autoList[4])) {
-      autoCommand = new LeftFourBallAuton(m_swerveDrive);
-    } else if (selected.equals(m_autoList[5])) {
-      autoCommand = new LeftFiveBallAuton(m_swerveDrive);
-    } else if (selected.equals(m_autoList[6])) {
-      autoCommand = new LeftSixBallAuton(m_swerveDrive);
-    } 
+    int numBalls = Integer.parseInt(selected.substring(selected.indexOf("-") + 1));
+    if (selected.startsWith("L")) {
+      switch (numBalls) {
+        case 1:
+          autoCommand = new LeftOneBallAuton(m_swerveDrive);
+          break;
+        case 2:
+          autoCommand = new LeftTwoBallAuton(m_swerveDrive);
+          break;
+        case 3:
+          autoCommand = new LeftThreeBallAuton(m_swerveDrive);
+          break;
+        case 4:
+          autoCommand = new LeftFourBallAuton(m_swerveDrive);
+          break;
+        case 5:
+          autoCommand = new LeftFiveBallAuton(m_swerveDrive);
+          break;
+        case 6:
+          autoCommand = new LeftSixBallAuton(m_swerveDrive);
+          break;
+        default:
+          autoCommand = defaultCommand;
+          break;
+      }
+    } else if (selected.startsWith("M")) {
+      switch (numBalls) {
+        case 1:
+          // autoCommand = new MiddleOneBallAuton(m_swerveDrive);
+          break;
+        case 2:
+          // autoCommand = new MiddleTwoBallAuton(m_swerveDrive);
+          break;
+        case 3:
+          // autoCommand = new MiddleThreeBallAuton(m_swerveDrive);
+          break;
+        case 4:
+          // autoCommand = new MiddleFourBallAuton(m_swerveDrive);
+          break;
+        case 5:
+          // autoCommand = new MiddleFiveBallAuton(m_swerveDrive);
+          break;
+        case 6:
+          // autoCommand = new MiddleSixBallAuton(m_swerveDrive);
+          break;
+        default:
+          autoCommand = defaultCommand;
+          break;
+      }
+    } else if (selected.startsWith("R")) {
+      switch (numBalls) {
+        case 1:
+          autoCommand = new RightOneBallAuton(m_swerveDrive);
+          break;
+        case 2:
+          autoCommand = new RightTwoBallAuton(m_swerveDrive);
+          break;
+        case 3:
+          autoCommand = new RightThreeBallAuton(m_swerveDrive);
+          break;
+        case 4:
+          autoCommand = new RightFourBallAuton(m_swerveDrive);
+          break;
+        case 5:
+          autoCommand = new RightFiveBallAuton(m_swerveDrive);
+          break;
+        case 6:
+          autoCommand = new RightSixBallAuton(m_swerveDrive);
+          break;
+        default:
+          autoCommand = defaultCommand;
+          break;
+      }
+    }
 
     return autoCommand;
   }

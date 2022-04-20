@@ -18,6 +18,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.util.Units;
 
+
+// Handle all trajectories and following
+// With command-based, automated auton (tryhard auton) could work
+
 public class PathManager {
     private static HashMap<String, Trajectory> trajectories;
     private static PIDController xController = new PIDController(Calibrations.CHASSIS_X[0], Calibrations.CHASSIS_X[1], Calibrations.CHASSIS_X[2]); // adds control for forward-backward error
