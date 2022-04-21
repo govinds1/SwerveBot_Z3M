@@ -153,6 +153,13 @@ public class PathManager {
         return CalculateSpeeds(currentTime, ConcatPoseNames(startPoseName, endPoseName), currentPose, currentHeading);
     }
 
+    public static ChassisSpeeds ManuallyCalculateSpeeds(Pose2d currentPose, Pose2d goalPose) {
+        double vx = xController.calculate(currentPose.getX(), goalPose.getX());
+        double vy = yController.calculate(currentPose.getY(), goalPose.getY());
+        double omega = thetaController.calculate(currentPose.getRotation().getRadians(), goalPose.getRotation().getRadians());
+        return new ChassisSpeeds(Units.feetToMeters(vx), Units.feetToMeters(vy), omega);
+    }
+
     public static double TrajectoryStatus(double currentTime, String trajectoryName) {
         return (currentTime / trajectories.get(trajectoryName).getTotalTimeSeconds());
     }

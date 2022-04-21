@@ -1,26 +1,24 @@
 package frc.robot.commands.autonomous;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.PathManager;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
-public class FollowTrajectoryCommand extends CommandBase {
+
+// For manually going to a specific Pose using the PID Controllers set up in PathManager
+// Not following a pre-generated trajectory
+// Will travel in a straight line and decelerate linearly
+// Useful for teleop (????)
+public class GoToPose extends CommandBase {
     private final SwerveDriveSubsystem m_swerveDrive;
-    private String m_trajectoryName;
+    private Pose2d m_goalPose;
     private double m_startTime;
 
-    public FollowTrajectoryCommand(SwerveDriveSubsystem swerveDrive, String trajectoryName) {
+    public GoToPose(SwerveDriveSubsystem swerveDrive, Pose2d goalPose) {
         m_swerveDrive = swerveDrive;
-        m_trajectoryName = trajectoryName;
-
-        // Use addRequirements() here to declare subsystem dependencies.
-        addRequirements(swerveDrive);
-    }
-
-    public FollowTrajectoryCommand(SwerveDriveSubsystem swerveDrive, String startName, String endName) {
-        m_swerveDrive = swerveDrive;
-        m_trajectoryName = PathManager.ConcatPoseNames(startName, endName);
+        m_goalPose = goalPose;
 
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(swerveDrive);
@@ -29,27 +27,27 @@ public class FollowTrajectoryCommand extends CommandBase {
     @Override
     public void initialize() {
       m_startTime = Timer.getFPGATimestamp();
-      m_swerveDrive.FollowTrajectory(GetTime(), m_trajectoryName);
+      
     }
   
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        m_swerveDrive.FollowTrajectory(GetTime(), m_trajectoryName);
+        Pose2d currentPose = m_swerveDrive.GetPose();
+        m_swerveDrive.SetDesiredSpeeds(PathManager.ManuallyCalculateSpeeds(currentPose, m_goalPose));
     }
   
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-      m_swerveDrive.Drive(0.01, 0, 0);
+      m_swerveDrive.Drive(0, 0, 0);
     }
   
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // Use time or atTarget?
-      // return PathManager.AtTarget();
-      return PathManager.TrajectoryStatus(GetTime(), m_trajectoryName) >= 1.0;
+        // Use holonomic controller at reference or just check all 3 PID controllers
+        return PathManager.AtTarget();
     }
 
     public double GetTime() {
