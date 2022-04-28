@@ -65,19 +65,13 @@ public class WheelModule {
         // boring and easy :]
         // m_driveMotor.set(TalonFXControlMode.Velocity, m_desiredSpeed);
         // m_angleMotor.set(TalonFXControlMode.Position, m_desiredAngle);
-
-        // general PID pseudocode for some variable x
-        // error = desired_x - current_x
-        // next_error = desired_x - (current_x_dot + current_x)
-        // next_x_dot = kp * error + ki * accum_error + kd * (next_error - error)
-        // accum_error = accum_error + error
         
         // Drive Velocity PID Control
         // x is the velocity (so x_dot is acceleration)
         double currentVelocity = GetVelocity();
         double velocityError = m_desiredVelocity - currentVelocity;
         double nextVelocityError = m_desiredVelocity - (m_currentDriveAcceleration * dt + currentVelocity);
-        double driveAcceleration = m_driveP * velocityError + m_driveI * m_driveAccumError + m_driveD * (nextVelocityError - velocityError);
+        double driveAcceleration = m_driveP * velocityError + m_driveI * m_driveAccumError + m_driveD * (nextVelocityError - velocityError) + m_driveFF * m_desiredVelocity;
         m_driveAccumError = m_driveAccumError + velocityError;
 
         // Angle Position PID Control
@@ -85,7 +79,7 @@ public class WheelModule {
         double currentAngle = GetAngle();
         double angleError = m_desiredAngle - currentAngle;
         double nextAngleError = m_desiredAngle - (m_currentAngleVelocity * dt + currentAngle);
-        double angleVelocity = m_angleP * angleError + m_angleI * m_angleAccumError + m_angleD * (nextAngleError - angleError); 
+        double angleVelocity = m_angleP * angleError + m_angleI * m_angleAccumError + m_angleD * (nextAngleError - angleError) + m_angleFF * m_desiredAngle;
 
         // Convert Drive acceleration and set motor
         m_currentDriveAcceleration = driveAcceleration;
