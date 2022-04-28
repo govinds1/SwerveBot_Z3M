@@ -29,6 +29,10 @@ public class PIDController {
         dt = period;
     }
 
+    public double GetPeriod() {
+        return dt;
+    }
+
     // Calculates the PID output from a given current value, target value, and derivative of the current value
     // Stores the target as the setpoint of the PID Controller
     public double Calculate(double current, double target, double current_dot) {

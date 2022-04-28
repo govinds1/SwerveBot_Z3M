@@ -37,9 +37,8 @@ public class WheelModule {
     double m_angleD = 0;
     double m_angleFF = 0;
 
-    // PID accumulated error
-    double m_driveAccumError = 0;
-    double m_angleAccumError = 0;
+    PIDController m_driveVelocityPID = new PIDController(m_driveP, m_driveI, m_driveD, m_driveFF);
+    PIDController m_anglePositionPID = new PIDController(m_angleP, m_angleI, m_angleD, m_angleFF);
 
     // Setpoint thresholds
     double m_driveFeetPerSecThreshold = 0.01;
@@ -50,15 +49,15 @@ public class WheelModule {
     // Stores angle motor encoder ticks where the wheel faces forward
     int m_angleEncoderZero;
 
-    // Delta time
-    double dt = 0.02;
-
 
     public WheelModule(int driveID, int angleID, int angleEncoderZero) {
         m_driveMotor = new TalonFX(driveID);
         m_angleMotor = new TalonFX(angleID);
 
         m_angleEncoderZero = angleEncoderZero;
+
+        m_driveVelocityPID.SetThreshold(m_driveFeetPerSecThreshold);
+        m_anglePositionPID.SetThreshold(m_angleRadianThreshold);
     }
 
     public void Periodic() {
@@ -67,24 +66,15 @@ public class WheelModule {
         // m_angleMotor.set(TalonFXControlMode.Position, m_desiredAngle);
         
         // Drive Velocity PID Control
-        // x is the velocity (so x_dot is acceleration)
-        double currentVelocity = GetVelocity();
-        double velocityError = m_desiredVelocity - currentVelocity;
-        double nextVelocityError = m_desiredVelocity - (m_currentDriveAcceleration * dt + currentVelocity);
-        double driveAcceleration = m_driveP * velocityError + m_driveI * m_driveAccumError + m_driveD * (nextVelocityError - velocityError) + m_driveFF * m_desiredVelocity;
-        m_driveAccumError = m_driveAccumError + velocityError;
+        double driveAcceleration = m_driveVelocityPID.Calculate(GetVelocity(), m_desiredVelocity, m_currentDriveAcceleration);
 
         // Angle Position PID Control
-        // x is the position
-        double currentAngle = GetAngle();
-        double angleError = m_desiredAngle - currentAngle;
-        double nextAngleError = m_desiredAngle - (m_currentAngleVelocity * dt + currentAngle);
-        double angleVelocity = m_angleP * angleError + m_angleI * m_angleAccumError + m_angleD * (nextAngleError - angleError) + m_angleFF * m_desiredAngle;
+        double angleVelocity = m_anglePositionPID.Calculate(GetAngle(), m_desiredAngle, m_currentAngleVelocity);
 
         // Convert Drive acceleration and set motor
         m_currentDriveAcceleration = driveAcceleration;
         double currentDriveOutput = m_driveMotor.getMotorOutputPercent();
-        double driveOutput = currentDriveOutput + (driveAcceleration * dt) / m_driveVelocityMaximum;
+        double driveOutput = currentDriveOutput + (driveAcceleration * m_driveVelocityPID.GetPeriod()) / m_driveVelocityMaximum;
         m_driveMotor.set(TalonFXControlMode.PercentOutput, driveOutput);
 
         // Convert Angle velocity and set motor
