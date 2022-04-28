@@ -107,6 +107,32 @@ public class WheelModule {
         m_desiredAngle = angle;
     }
 
+    // drive is in [0, 1]
+    // angle is in [-3.14, 3.14]
+    public void Drive(double drive, double angle) {
+        // Add angle offset
+        angle += m_angleEncoderZero * m_anglePositionConversion;
+
+        // Optimize angle
+            // the wheel should not turn more than 90 degrees
+        double currentAngle = GetAngle();
+        while (Math.abs(currentAngle - angle) > (Math.PI / 2.0)) {
+            // flip angle 180 degrees and reverse speed
+            drive = -drive;
+            if (currentAngle < angle) {
+                angle -= Math.PI;
+            } else {
+                angle += Math.PI;
+            }
+        }
+
+        // Convert drive to velocity units
+        double velocity = drive * m_driveVelocityMaximum;
+
+        // Set desired state
+        SetDesiredState(velocity, angle);
+    }
+
     public double GetVelocity() {
         return m_driveMotor.getSelectedSensorVelocity() * m_driveVelocityConversion;
     }
