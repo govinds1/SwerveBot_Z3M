@@ -39,16 +39,17 @@ public class SwerveDrive {
         // Factor in field relativity
         // check tablet notes
         if (m_fieldRelative) {
+            // vx and vy are relative to the field so we must convert to robot relative coordinates
             double currentHeading = GetHeading();
-            // get field relative components of vx and vy
-            double vx_worldX = Math.cos(currentHeading) * vx;
-            double vx_worldY = Math.sin(currentHeading) * vx;
-            double vy_worldX = Math.sin(currentHeading) * vy;
-            double vy_worldY = Math.cos(currentHeading) * vy;
+            // get robot relative components of vx and vy
+            double vx_robotX = Math.cos(currentHeading) * vx;
+            double vx_robotY = Math.sin(currentHeading) * vx;
+            double vy_robotX = Math.sin(currentHeading) * vy;
+            double vy_robotY = Math.cos(currentHeading) * vy;
 
             // combine field relative components
-            vx = vx_worldX + vy_worldX;
-            vy = vx_worldY + vy_worldY;
+            vx = vx_robotX + vy_robotX;
+            vy = vx_robotY + vy_robotY;
         }
 
         // Derivation of Inverse Kinematics Swerve Drive: https://www.chiefdelphi.com/uploads/default/original/3X/8/c/8c0451987d09519712780ce18ce6755c21a0acc0.pdf
