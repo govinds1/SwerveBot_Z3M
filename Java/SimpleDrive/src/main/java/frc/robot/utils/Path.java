@@ -9,14 +9,16 @@ public class Path {
         // x is +forward (to opponent's alliance station)
         // y is +left
         // theta is +CCW (turning left)
-        private double x;
-        private double y;
-        private double theta;
+        public double x;
+        public double y;
+        public double theta;
+        public double velocity;
     
-        public State(double x, double y, double theta) {
+        public State(double x, double y, double theta, double velocity) {
             this.x = x;
             this.y = y;
             this.theta = theta;
+            this.velocity = velocity;
         }
     
         public double DistanceTo(State other, boolean checkRotation) {
