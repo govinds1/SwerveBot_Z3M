@@ -48,6 +48,7 @@ public class PIDController {
         // next_error = target_x - (current_x_dot * delta_t + current_x)
         // next_x_dot = kp * error + ki * accum_error + kd * (next_error - error) + kf * target_x
         // accum_error = accum_error + error
+        // IF: you ensure that Calculate is run every cycle, then you can calculate current_dot from lastVal and current
         double error = setpoint - current;
         double nextError = setpoint - (current_dot * dt + current);
         double output = kP * error + kI * accumError + kD * (nextError - error) + kFF * setpoint;

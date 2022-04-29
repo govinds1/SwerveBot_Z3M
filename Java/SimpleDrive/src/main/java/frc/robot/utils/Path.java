@@ -31,13 +31,22 @@ public class Path {
         public boolean EqualTo(State other, double threshold, boolean checkRotation) {
             return DistanceTo(other, checkRotation) < threshold;
         }
+
+        public ChassisSpeeds SpeedsTo(State other, double dt) {
+            double vx = (other.x - this.x) / dt;
+            double vy = (other.y - this.y) / dt;
+            double omega = (other.theta - this.theta) / dt;
+            return new ChassisSpeeds(vx, vy, omega);
+        }
     }
     private State start;
     private State goal;
     private State[] waypoints;
+    private String name;
 
     // Initializes a Path with start and goal states and any number of intermediate waypoints
-    public Path(State start, State goal, State... waypoints) {
+    public Path(String name, State start, State goal, State... waypoints) {
+        this.name = name;
         this.start = start;
         this.goal = goal;
         this.waypoints = waypoints;
@@ -51,5 +60,9 @@ public class Path {
         }
         states.add(goal);
         return states;
+    }
+
+    public String GetName() {
+        return name;
     }
 }
