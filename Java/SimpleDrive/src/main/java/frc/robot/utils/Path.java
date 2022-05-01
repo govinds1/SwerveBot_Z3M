@@ -12,13 +12,11 @@ public class Path {
         public double x;
         public double y;
         public double theta;
-        public double velocity;
     
-        public State(double x, double y, double theta, double velocity) {
+        public State(double x, double y, double theta) {
             this.x = x;
             this.y = y;
             this.theta = theta;
-            this.velocity = velocity;
         }
     
         public double DistanceTo(State other, boolean checkRotation) {

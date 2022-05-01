@@ -1,6 +1,7 @@
 package frc.robot.swerve;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import frc.robot.utils.Path.State;
 
 public class SwerveDrive {
     private WheelModule m_frontLeft = new WheelModule(0, 1, 0);
@@ -44,7 +45,7 @@ public class SwerveDrive {
             // get robot relative components of vx and vy
             double vx_robotX = Math.cos(currentHeading) * vx;
             double vx_robotY = Math.sin(currentHeading) * vx;
-            double vy_robotX = Math.sin(currentHeading) * vy;
+            double vy_robotX = -Math.sin(currentHeading) * vy;
             double vy_robotY = Math.cos(currentHeading) * vy;
 
             // combine field relative components
@@ -53,6 +54,7 @@ public class SwerveDrive {
         }
 
         // Derivation of Inverse Kinematics Swerve Drive: https://www.chiefdelphi.com/uploads/default/original/3X/8/c/8c0451987d09519712780ce18ce6755c21a0acc0.pdf
+        // https://www.chiefdelphi.com/uploads/default/original/3X/e/f/ef10db45f7d65f6d4da874cd26db294c7ad469bb.pdf
         // Calculate Inverse Kinematics equations
         double A = vx - omega * (m_wheelbaseLength / 2);
         double B = vx + omega * (m_wheelbaseLength / 2);

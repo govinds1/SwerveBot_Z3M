@@ -119,10 +119,12 @@ public class WheelModule {
         SetDesiredState(velocity, angle);
     }
 
+    // Returns wheel velocity in feet per second
     public double GetVelocity() {
         return m_driveMotor.getSelectedSensorVelocity() * m_driveVelocityConversion;
     }
 
+    // Returns wheel angle in radians
     public double GetAngle() {
         return m_angleMotor.getSelectedSensorPosition() * m_anglePositionConversion;
     }
