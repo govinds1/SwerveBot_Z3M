@@ -2,12 +2,10 @@ package frc.robot.utils;
 
 import java.util.List;
 
-import frc.robot.utils.Path.State;
-
 public class HolonomicPathFollower {
     private Path currentPath;
-    private List<State> nextStates;
-    private State lastState;
+    private List<Pose> nextStates;
+    private Pose lastState;
     private PIDController xPID;
     private PIDController yPID;
     private PIDController thetaPID;
@@ -34,11 +32,11 @@ public class HolonomicPathFollower {
 
     // Calculate Speeds to the next state in the current path given a current drive State
     // Must be called every cycle while following the path
-    public ChassisSpeeds CalculateSpeeds(State currentState) {
+    public ChassisSpeeds CalculateSpeeds(Pose currentState) {
         while (!AtNextPathState(currentState)) {
             nextStates.remove(0);
         }
-        State targetState = nextStates.get(0);
+        Pose targetState = nextStates.get(0);
         if (lastState == null) {
             lastState = currentState;
         }
@@ -51,7 +49,7 @@ public class HolonomicPathFollower {
         return new ChassisSpeeds(vx, vy, omega);
     }
 
-    public boolean AtNextPathState(State currentState) {
+    public boolean AtNextPathState(Pose currentState) {
         return currentState.EqualTo(nextStates.get(0), 0.01, true);
     }
 }

@@ -1,7 +1,6 @@
 package frc.robot.swerve;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import frc.robot.utils.Path.State;
 
 public class SwerveDrive {
     private WheelModule m_frontLeft = new WheelModule(0, 1, 0);
